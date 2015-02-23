@@ -13,7 +13,7 @@ end
 
 local MENU_DIR = 'LuaUI/Widgets/Menu/'
 
-local Chili, Screen
+local Chili, Screen, tabs
 local MenuWindow, MenuButtons, scrH, scrW
 
 local function getVars()
@@ -39,7 +39,47 @@ local function getVars()
 	TabPanel    = Chili.TabPanel
 	TabBar      = Chili.TabBar
 	TabBarItem  = Chili.TabBarItem
+  TextBox     = Chili.Textbox
 	Panel       = Chili.Panel
+  Stack       = function(obj)
+  	if obj.scroll then
+      return ScrollPanel:New{
+  			x        = obj.x or 0,
+  			y        = obj.y or 0,
+  			width    = obj.width or '50%',
+  			bottom   = obj.bottom or 0,
+  			children = {
+  				StackPanel:New{
+  					name        = obj.name or 'Stack',
+  					x           = 0,
+  					y           = 0,
+  					width       = '100%',
+  					resizeItems = false,
+  					autosize    = true,
+  					padding     = {0,0,0,0},
+  					itemPadding = {0,0,0,0},
+  					itemMargin  = {0,0,0,0},
+  					children    = obj.children or {},
+  					preserverChildrenOrder = true
+  				}
+  			}
+  		}
+  	else
+      return StackPanel:New{
+  			name        = obj.name or 'Stack',
+  			x           = obj.x or 0,
+  			y           = obj.y or 0,
+  			width       = obj.width or '50%',
+  			resizeItems = false,
+  			autosize    = true,
+  			padding     = {0,0,0,0},
+  			itemPadding = {0,0,0,0},
+  			itemMargin  = {0,0,0,0},
+  			children    = obj.children or {},
+  			preserverChildrenOrder = true
+  		}
+  	end
+  end
 
 	scrH = Screen.height
 	scrW = Screen.width
@@ -87,7 +127,7 @@ local function initMain()
 		children = {}
 	}
 
-	local tabs = {
+	tabs = {
 		PlaceHolder = Label:New{caption = 'Coming Soon..', y = 6, fontSize = 30,  x = '0%', width = '100%', align = 'center'},
     Skirmish    = VFS.Include(MENU_DIR .. 'Skirmish.lua'),
 		Debug       = VFS.Include(MENU_DIR .. 'Debug.lua'),
@@ -128,10 +168,39 @@ end
 
 function widget:Initialize()
 	-- WG.GetMapInfo('Ravaged_2')
-	Spring.SendCommands("ResBar 0", "ToolTip 0","fps 0")
+	Spring.SendCommands("ResBar 0", "ToolTip 0","fps 0","console 0")
 	getVars()
 	initMain()
 	initBG()
+
+  -- load from console buffer
+  local buffer = Spring.GetConsoleBuffer(40)
+  for i=1,#buffer do
+    line = buffer[i]
+  	widget:AddConsoleLine(line.text,line.priority)
+  end
+
+end
+
+function widget:AddConsoleLine(text)
+  local log = tabs.Debug:GetObjectByName('log')
+
+  log:AddChild(Chili.TextBox:New{
+    width       = '100%',
+    text        = text,
+    duplicates  = 0,
+    align       = "left",
+    valign      = "ascender",
+    padding     = {0,0,0,0},
+    duplicates  = 0,
+    lineSpacing = 1,
+    font        = {
+      outline          = true,
+      autoOutlineColor = true,
+      outlineWidth     = 4,
+      outlineWeight    = 1,
+    },
+  })
 end
 
 function widget:ShutDown()

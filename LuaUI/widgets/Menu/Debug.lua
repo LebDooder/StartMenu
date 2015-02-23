@@ -3,6 +3,10 @@ local Debug = Control:New{
 	name = 'Debug',
 }
 
+----------------------------
+-- Widgets
+----------------------------
+
 local wFilterString = ""
 local widgetList = {}
 
@@ -128,50 +132,6 @@ local function makeWidgetList()
 end
 
 ----------------------------
--- Creates a stack panel which can then be used as a parent to options
-local Stack = function(obj)
-	local stack
-	if obj.scroll then
-		stack = ScrollPanel:New{
-			x        = obj.x or 0,
-			y        = obj.y or 0,
-			width    = obj.width or '50%',
-			bottom   = obj.bottom or 0,
-			children = {
-				StackPanel:New{
-					name        = obj.name or 'Stack',
-					x           = 0,
-					y           = 0,
-					width       = '100%',
-					resizeItems = false,
-					autosize    = true,
-					padding     = {0,0,0,0},
-					itemPadding = {0,0,0,0},
-					itemMargin  = {0,0,0,0},
-					children    = obj.children or {},
-					preserverChildrenOrder = true
-				}
-			}
-		}
-	else
-		stack = StackPanel:New{
-			name        = obj.name or 'Stack',
-			x           = obj.x or 0,
-			y           = obj.y or 0,
-			width       = obj.width or '50%',
-			resizeItems = false,
-			autosize    = true,
-			padding     = {0,0,0,0},
-			itemPadding = {0,0,0,0},
-			itemMargin  = {0,0,0,0},
-			children    = obj.children or {},
-			preserverChildrenOrder = true
-		}
-	end
-	return stack
-end
-
-----------------------------
 -- Rebuilds widget list with new filter
 local function addFilter()
 	local editbox = Debug:GetObjectByName('widgetFilter')
@@ -184,7 +144,7 @@ Debug:AddChild(EditBox:New{
   name        = 'widgetFilter',
   x           = 0,
   y           = 0,
-  width       = '35%',
+  width       = '40%',
   text        = ' Enter filter -> Hit Return,  or -->',
   OnMouseDown = {function(obj) obj.text = '' end}
 })
@@ -193,18 +153,22 @@ Debug:AddChild(Button:New{
   right     = '50%',
   y         = 0,
   height    = 20,
-  width     = '15%',
+  width     = '10%',
   caption   = 'Search',
   OnMouseUp = {addFilter}
 })
 
 Debug:AddChild(Stack{
   name   = 'widgetList',
-  x      = '50%',
+  y      = 25,
   scroll = true
 })
 
-Debug:AddChild(Line:New{width='50%',y=80})
+Debug:AddChild(Stack{
+  name   = 'log',
+  x      = '50%',
+  scroll = true
+})
 
 makeWidgetList()
 

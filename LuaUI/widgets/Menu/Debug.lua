@@ -144,29 +144,31 @@ Debug:AddChild(EditBox:New{
   name        = 'widgetFilter',
   x           = 0,
   y           = 0,
-  width       = '40%',
+  width       = '30%',
   text        = ' Enter filter -> Hit Return,  or -->',
   OnMouseDown = {function(obj) obj.text = '' end}
 })
 
 Debug:AddChild(Button:New{
-  right     = '50%',
+  right     = '63%',
   y         = 0,
   height    = 20,
-  width     = '10%',
+  width     = '7%',
   caption   = 'Search',
   OnMouseUp = {addFilter}
 })
 
 Debug:AddChild(Stack{
   name   = 'widgetList',
+  width  = '35%',
   y      = 25,
   scroll = true
 })
 
 Debug:AddChild(Stack{
   name   = 'log',
-  x      = '50%',
+  x      = '40%',
+  width  = '60%',
   scroll = true
 })
 

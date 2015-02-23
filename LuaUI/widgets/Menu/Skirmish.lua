@@ -202,7 +202,7 @@ local generatePersona = function(self)
 end
 
 Match:AddChild(Label:New{
-	caption  = 'Skirmish',
+	caption  = Match.Script.gametype,
 	x        = 2,
 	y        = 4,
 	fontSize = 50,

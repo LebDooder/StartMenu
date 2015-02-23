@@ -23,7 +23,7 @@ end
 function TabBarItem:MouseDown(...)
   if not self.parent then return end
   if self.parent.selected_obj == self then
-	self.parent:Remove(self.caption)
+	-- self.parent:Remove(self.caption)
   else
 	self.parent:Select(self.caption)
   end

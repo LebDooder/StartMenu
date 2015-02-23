@@ -373,8 +373,8 @@ local function loadMainMenu()
 		itemPadding  = {1,0,1,0},
 		OnChange     = {sTab}
 	}
-    
-    mainMenu:Hide()
+
+  mainMenu:Hide()
 
 end
 
@@ -419,7 +419,7 @@ local comboBox = function(obj)
 		elseif setting == 'Cursor' then
 			setCursor(value)
 			Settings['CursorName'] = value
-        else 
+        else
             spSendCommands(setting..' '..value)
 		end
 
@@ -579,9 +579,9 @@ function widget:Initialize()
 	loadMainMenu()
 
 	createInterfaceTab()
-	
+
 	globalize()
-	
+
 	makeWidgetList()
 
 	-----------------------
@@ -606,4 +606,3 @@ function widget:Shutdown()
 	spSendCommands('bind f11 luaui selector') -- if the default one is removed or crashes, then have the backup one take over.
 	spSendCommands('bind Any+i gameinfo')
 end
-

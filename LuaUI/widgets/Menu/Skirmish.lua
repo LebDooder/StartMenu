@@ -13,19 +13,19 @@ local Match = Control:New{
 			spectator = 0,
 			team = 0,
 		},
-		
+
 		team0  =  {
 			allyteam = 0,
 			rgbcolor = '0.99609375 0.546875 0',
 			side = 'CORE',
 			teamleader = 0,
 		},
-		
+
 		allyteam0  =  {
 			numallies = 0,
 		},
-	
-		gametype = 'Balanced Annihilation Reloaded Core $VERSION',
+
+		gametype = 'Balanced Annihilation Reloaded $VERSION',
 		hostip = '127.0.0.1',
 		hostport = 8452,
 		ishost = 1,
@@ -40,9 +40,9 @@ local Match = Control:New{
 
 -- Adds bots to script table, then starts the game with a generated script
 local function StartScript()
-	
+
 	-- it's easier to store and modify objects than table
-	--  so we wait until the end to bots in the Script (no more changing)
+	--  so I wait until the end to put bots in the Script (no more changing)
 	for team = 1, #Match.bots do
 		local bot = Match.bots[team]
 		Match.Script['ai' .. team - 1] = {
@@ -61,7 +61,7 @@ local function StartScript()
 			teamleader = 0,
 		}
 
-		if not Match.Script['allyteam' .. bot.allyTeam] then 
+		if not Match.Script['allyteam' .. bot.allyTeam] then
 			Match.Script['allyteam' .. bot.allyTeam]  =  {
 				numallies = 0,
 			}
@@ -69,7 +69,7 @@ local function StartScript()
 	end
 
 	WriteScript(Match.Script)
-	Spring.Restart('script.txt','')
+	Spring.Reload(ScriptTXT(Match.Script))
 end
 
 local sideImage = function(side, color)
@@ -168,7 +168,7 @@ end
 -- Attaches random profile and config layout to Button obj
 -- Essentially turns Button obj into AI obj
 local generatePersona = function(self)
-	
+
 	self.name = Match.botNames[math.random(5)]
 	self.team = #Match.bots + 1
 	self.color = {math.random(),math.random(),math.random(),1}
@@ -176,10 +176,10 @@ local generatePersona = function(self)
 
 	self.caption = ''
 	self:AddChild(sideImage(self.side, self.color))
-	
+
 	self.layout = getLayout(self)
-	
-	-- create a replacement AI button
+
+	-- create a replacement add AI button
 	Match:AddChild(Button:New{
 		x = self.x + 55,
 		y = 60,
@@ -197,7 +197,7 @@ local generatePersona = function(self)
 			Match:GetChildByName('AI Config'):AddChild(self.layout)
 		end
 	}
-	
+
 	Match.bots[self.team] = self
 end
 
@@ -221,7 +221,7 @@ Match:AddChild(Button:New{
 
 ---------------------------
 -- Teams and Bot UI
--- TODO add allyTeams: 
+-- TODO add allyTeams:
 --  YOU vs (bot)(add AI) vs (add AI)
 
 Match:AddChild(Label:New{
@@ -276,16 +276,6 @@ Match:AddChild(Label:New{
 	y        = 120,
 })
 
-local MapList = ScrollPanel:New{
-	name   = 'Map Selection',
-	right  = 0,
-	width  = 185,
-	y      = 0,
-	bottom = 0,
-	children = {Label:New{caption = '-- Select Map --', y = 6, fontSize = 18,  x = '0%', width = '100%', align = 'center'}}
-	
-}
-
 -- TODO get minimaps somehow
 -- TODO add small translucent info overlay over minimap (wind, size, teams, etc..)
 -- TODO get and show team start boxes, or at least start positions
@@ -300,6 +290,16 @@ local MiniMap = Button:New{
 	focusColor = {0,0,0,0.5},
 	borderColor = {0,0,0,0},
 	backgroundColor = {0,0,0,0.5},
+}
+
+local MapList = ScrollPanel:New{
+	name   = 'Map Selection',
+	right  = 0,
+	width  = 185,
+	y      = 0,
+	bottom = 0,
+	children = {Label:New{caption = '-- Select Map --', y = 6, fontSize = 18,  x = '0%', width = '100%', align = 'center'}}
+
 }
 
 for _, map in pairs(VFS.GetMaps()) do

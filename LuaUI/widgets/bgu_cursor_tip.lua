@@ -41,6 +41,7 @@ local function initWindow()
 		minHeight = 1,
 		padding   = {5,4,4,4},
 	}
+	
 	tip = Chili.TextBox:New{
 		parent = tipWindow, 
 		x      = 0,
@@ -66,70 +67,6 @@ function widget:ViewResize(vsx, vsy)
 end
 
 -----------------------------------
-local function formatresource(description, res)
-	color = ""
-	if res < 0 then color = '\255\255\127\0' end
-	if res > 0 then color = '\255\127\255\0' end
-	
-	if math.abs(res) > 20 then -- no decimals for small numbers
-		res = string.format("%d", res)
-		else
-		res = string.format("%.1f",res)
-	end
-	return color .. description .. res
-end
------------------------------------
-local function getUnitTooltip(uID)
-	local tooltip = spGetUnitTooltip(uID)
-	if tooltip==nil then
-		tooltip=""
-	end
-	local metalMake, metalUse, energyMake, energyUse = spGetUnitResources(uID)
-	
-	local metal = ((metalMake or 0) - (MetalUse or 0))
-	local energy = ((energyMake or 0) - (energyUse or 0))
-	
-	tooltip = tooltip..'\n'..formatresource("Metal: ", metal)..'/s\b\n' .. formatresource("Energy: ", energy)..'/s'
-	return tooltip
-end
------------------------------------
-local function getFeatureTooltip(fID)
-	local rMetal, mMetal, rEnergy, mEnergy, reclaimLeft = spGetFeatureResources(fID)
-    local fDID = spGetFeatureDefID(fID)
-    local fName = FeatureDefs[fDID].tooltip
-	local tooltip = "Metal: "..rMetal..'\n'.."Energy: "..rEnergy
-    if fName then tooltip = firstToUpper(fName) .. '\n' .. tooltip end
-	return tooltip
-end
------------------------------------
-local prevTipType, prevID
-local function getTooltip()
-
-	-- This gives chili absolute priority
-	--  otherwise TraceSreenRay() would ignore the fact ChiliUI is underneath the mouse
-	if screen.currentTooltip then
-		tipType = 'chili'
-		return screen.currentTooltip
-	else
-		tipType, ID = spTraceScreenRay(spGetMouseState())
-
-		if tipType == prevTipType and ID==prevID then
-			return false
-		else
-			prevTipType = tipType; prevID = ID
-		end
-
-		if tipType == 'unit'        then
-			return getUnitTooltip(ID)
-		elseif tipType == 'feature' then 
-			return getFeatureTooltip(ID)
-		else
-			tipType = false
-			return ''
-		end
-	end
-end
------------------------------------
 local function setTooltip(text)
 	local text         = text or tip.text
 	local x,y          = spGetMouseState()
@@ -149,18 +86,17 @@ local function setTooltip(text)
 	if tipWindow.hidden then tipWindow:Show() end
 	tipWindow:BringToFront()
 end
+
 -----------------------------------
 function widget:Update()
 	local curTime = spGetTimer()
-	local text = getTooltip()
+	local text = screen.currentTooltip or ''
 	
-	if text and tip.text ~= text then
+	
+	if text == '' then
+		if tipWindow.visible then tipWindow:Hide() end
+	elseif text ~= tip.text then
 		tip:SetText(text)
-		oldTime = spGetTimer()
-		if tipWindow.visible then 
-			tipWindow:Hide()
-		end
-	elseif tipType and (spDiffTimers(curTime, oldTime) > 1 or tipType == 'chili' and spDiffTimers(curTime, oldTime) > 0.5) then
 		setTooltip(text)
 	end
 end

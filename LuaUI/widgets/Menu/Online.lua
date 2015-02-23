@@ -3,6 +3,7 @@ local Online = Control:New{
 	name = 'Online',
 }
 
---WG.BattleList()
+local BattleList = WG.BattleList()
+Online:AddChild(BattleList.battlePanel)
 
 return Online

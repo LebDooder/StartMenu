@@ -7,6 +7,7 @@ function widget:GetInfo()
 	license   = "GPL-v2",
 	layer     = 1010,
 	enabled   = true,
+  handler   = true
   }
 end
 
@@ -50,8 +51,7 @@ local function showMenu(menu)
 end
 
 local function initBG()
-	local width = scrW * 0.8
-	
+
 	Background = Control:New{
 		x       = 0,
 		y       = 0,
@@ -61,14 +61,6 @@ local function initBG()
 		margin  = {0,0,0,0},
 		parent  = Screen
 	}
-	
-	Background:AddChild(Image:New{
-		y      = 0,
-		x      = 0,
-		width  = '100%',
-		height = 300,
-		file   = 'LuaUI/images/BARlogo.png',
-	})
 
 	Background:AddChild(Image:New{
 		y          = 0,
@@ -79,39 +71,37 @@ local function initBG()
 		file       = 'LuaUI/images/gradient.png',
 	})
 
-	-- Background:AddChild(Image:New{
-		-- y      = 0,
-		-- x      = 0,
-		-- width  = 2560, -- image res
-		-- height = 1440, -- image res
-		-- file   = 'Bitmaps/LoadPictures/loadscreen.png',
-	-- })
 end
 
 local function initMain()
-	
+
+  local width = scrW * 0.8
+  local height = width / 2
+
 	MenuWindow = Panel:New{
 		parent = Screen,
-		x      = scrW/2 - 400,
-		y      = 300,
-		height = 400,
-		width  = 800,
+		x      = (scrW - width)/2,
+		y      = (scrH - height)/2,
+		height = height,
+		width  = width,
 		children = {}
 	}
 
 	local tabs = {
 		PlaceHolder = Label:New{caption = 'Coming Soon..', y = 6, fontSize = 30,  x = '0%', width = '100%', align = 'center'},
-		Online      = VFS.Include(MENU_DIR .. 'Online.lua'),
-		Skirmish    = VFS.Include(MENU_DIR .. 'Skirmish.lua'),
+    Skirmish    = VFS.Include(MENU_DIR .. 'Skirmish.lua'),
+		Debug       = VFS.Include(MENU_DIR .. 'Debug.lua'),
+    -- Options    = VFS.Include(MENU_DIR .. 'Options.lua'),
+		-- Online      = VFS.Include(MENU_DIR .. 'Online.lua'),
 	}
 
-	
+
 	MenuTabs = TabBar:New{
 		name   = 'Tabs',
 		parent = Screen,
-		x      = scrW/2 - 400,
-		y      = 270,
-		width  = 800,
+		x      = (scrW - width)/2,
+		y      = (scrH - height)/2 - 30,
+		width  = width,
 		height = 30,
 		itemMargin = {0,0,4,0},
 		OnChange = {
@@ -121,25 +111,19 @@ local function initMain()
 			end
 		},
 		children = {
-			TabBarItem:New{ caption = 'Online', width = 100, fontsize = 20},
+			-- TabBarItem:New{ caption = 'Online', width = 100, fontsize = 20},
 			TabBarItem:New{ caption = 'Skirmish', width = 100, fontsize = 20},
 			TabBarItem:New{ caption = 'Missions', width = 100, fontsize = 20},
 			TabBarItem:New{ caption = 'Chickens', width = 100, fontsize = 20},
-			TabBarItem:New{ caption = 'Options', width = 100, fontsize = 20},
+      TabBarItem:New{ caption = 'Options', width = 100, fontsize = 20},
+      TabBarItem:New{ caption = 'Debug', width = 100, fontsize = 20},
 			-- TabBarItem:New{ caption = 'Quit',
 				-- width = '100%', fontsize = 20,
 				-- OnClick = {function() Spring.SendCommands{'quit'} end}
 			-- },
 		}
 	}
-	
-	TestTab = TabBarItem:New{
-		caption = 'Test',
-		parent = MenuTabs,
-		width = 100,
-		fontsize = 20,
-		OnClick = {function() MenuTabs:Remove('Test') end}
-	}
+
 end
 
 function widget:Initialize()
@@ -155,19 +139,36 @@ function widget:ShutDown()
 	--MenuButtons:Dispose()
 end
 
-function widget:DrawScreen()
-	-- Black Background
-	--  TODO fix, only needed for brief moment before chili inits
-	-- local vsx, vsy = gl.GetViewSizes()
-	-- gl.Color(0,0,0,1)
-	-- gl.Rect(0,0,vsx,vsy)
-end
+function ScriptTXT(script)
+  local txt = '[Game]\n{\n\n'
 
+  -- First write Tables
+  for key, value in pairs(script) do
+    if type(value) == 'table' then
+      txt = txt..'\t['..key..']\n\t{\n'
+      for key, value in pairs(value) do
+        txt = txt..'\t\t'..key..'='..value..';\n'
+      end
+      txt = txt..'\t}\n\n'
+    end
+  end
+
+  -- Then the rest (purely for aesthetics)
+  for key, value in pairs(script) do
+    if type(value) ~= 'table' then
+      txt = txt..'\t'..key..'='..value..';\n'
+    end
+  end
+
+  txt = txt..'}'
+
+  return txt
+end
 
 function WriteScript(script)
 	local txt = io.open('script.txt', 'w+')
 	txt:write('[Game]\n{\n\n')
-	
+
 	-- First write Tables
 	for key, value in pairs(script) do
 		if type(value) == 'table' then
@@ -178,7 +179,7 @@ function WriteScript(script)
 			txt:write('\t}\n\n')
 		end
 	end
-	
+
 	-- Then the rest (purely for aesthetics)
 	for key, value in pairs(script) do
 		if type(value) ~= 'table' then

@@ -115,7 +115,7 @@ end
 
 local function initMain()
 
-  local width = scrW * 0.8
+  local width = scrW * 0.9
   local height = width / 2
 
 	MenuWindow = Panel:New{
@@ -139,7 +139,7 @@ local function initMain()
 	MenuTabs = TabBar:New{
 		name   = 'Tabs',
 		parent = Screen,
-		x      = (scrW - width)/2,
+		x      = (scrW - width)/2 + 30,
 		y      = (scrH - height)/2 - 30,
 		width  = width,
 		height = 30,

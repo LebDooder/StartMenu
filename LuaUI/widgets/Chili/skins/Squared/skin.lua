@@ -27,10 +27,10 @@ skin.panel = {
 	TileImageBK = ":cl:bg.png",
 	TileImageFG = ":cl:panel_fg.png",
 	tiles = {62, 62, 62, 62},
-	
-	backgroundColor = {0.5,0.4,0.4,0.5},
-	borderColor = {1,1,1,1},
-	
+
+	backgroundColor = {0.1,0.1,0.4,0.2},
+	borderColor = {1,1,1,0.5},
+
 	DrawControl = DrawPanel,
 }
 
@@ -42,11 +42,11 @@ skin.button = {
 	TileImageBK = ":cl:bg.png",
 	TileImageFG = ":cl:button_fg.png",
 	tiles = {26, 26, 26, 26},
-	
+
 	focusColor  = {1, 0.5, 0, 0.6},
 	backgroundColor = {1, 0, 0, 0.4},
 	borderColor = {1, 0.5, 0, 0.6},
-	
+
 	DrawControl = DrawButton,
 }
 
@@ -59,7 +59,7 @@ skin.tabbaritem = {
   TileImageFG = ":cl:tab_fg.png",
   tiles = {32, 32, 32, 0}, --// tile widths: left,top,right,bottom
   padding = {5, 3, 3, 2},
-  
+
   backgroundColor = {0, 0, 0, 0.5},
   borderColor = {1, 0.5, 0, 1},
 

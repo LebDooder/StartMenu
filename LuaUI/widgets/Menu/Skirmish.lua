@@ -211,8 +211,8 @@ Match:AddChild(Label:New{
 
 Match:AddChild(Button:New{
 	caption  = 'Start',
-	y        = 10,
-	right    = 20,
+	bottom   = 10,
+	right    = 210,
 	height   = 50,
 	width    = 65,
 	padding  = {0,0,0,0},
@@ -287,8 +287,8 @@ local MapList = ScrollPanel:New{
 	name   = 'Map Selection',
 	right  = 0,
 	width  = 200,
-	height = 200,
-	bottom = 0,
+	height = '50%',
+	y      = 0,
 	children = {Label:New{caption = '-- Select Map --', y = 6, fontSize = 18,  x = '0%', width = '100%', align = 'center'}}
 }
 for _, name in pairs(VFS.GetMaps()) do
@@ -314,8 +314,8 @@ local GameList = ScrollPanel:New{
 	parent = match,
 	right  = 0,
 	width  = 200,
-	height = 200,
-	bottom = 200,
+	height = '49%',
+	bottom = 0,
 	children = {Label:New{caption = '-- Select Game --', y = 6, fontSize = 18,  x = '0%', width = '100%', align = 'center'}}
 }
 for _, name in pairs(VFS.GetGames()) do

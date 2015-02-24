@@ -25,11 +25,11 @@ local Match = Control:New{
 			numallies = 0,
 		},
 
-		gametype = 'Balanced Annihilation Reloaded $VERSION',
+		gametype = 'Pick A Game',
 		hostip = '127.0.0.1',
 		hostport = 8452,
 		ishost = 1,
-		mapname = 'Icy_Shell_v01',
+		mapname = 'Pick A Map',
 		myplayername = 'Local',
 		nohelperais = 0,
 		numplayers = 1,
@@ -193,8 +193,8 @@ local generatePersona = function(self)
 
 	self.OnClick = {
 		function(self)
-			Match:GetChildByName('AI Config'):ClearChildren()
-			Match:GetChildByName('AI Config'):AddChild(self.layout)
+			-- Match:GetChildByName('AI Config'):ClearChildren()
+			-- Match:GetChildByName('AI Config'):AddChild(self.layout)
 		end
 	}
 
@@ -202,6 +202,7 @@ local generatePersona = function(self)
 end
 
 Match:AddChild(Label:New{
+	name     = 'Game Name',
 	caption  = Match.Script.gametype,
 	x        = 2,
 	y        = 4,
@@ -242,20 +243,20 @@ Match:AddChild(Button:New{
 	OnClick  = {generatePersona},
 })
 
-Match:AddChild(Panel:New{
-	name     = 'AI Config',
-	right    = 0,
-	y        = 150,
-	bottom   = 6,
-	width    = '25%',
-	padding  = {0,0,0,0},
-	children = {
-		Label:New{caption = 'Add AI', y = 6, fontSize = 18,  x = '0%', width = '100%', align = 'center'},
-		Label:New{caption = 'and/or', y = 26, fontSize = 18, x = '0%', width = '100%', align = 'center'},
-		Label:New{caption = 'Select AI', y = 46, fontSize = 18, x = '0%', width = '100%', align = 'center'},
-		Label:New{caption = 'To edit', y = 66, fontSize = 18, x = '0%', width = '100%', align = 'center'},
-	}
-})
+-- Match:AddChild(Panel:New{
+-- 	name     = 'AI Config',
+-- 	right    = 0,
+-- 	y        = 150,
+-- 	bottom   = 6,
+-- 	width    = '25%',
+-- 	padding  = {0,0,0,0},
+-- 	children = {
+-- 		Label:New{caption = 'Add AI', y = 6, fontSize = 18,  x = '0%', width = '100%', align = 'center'},
+-- 		Label:New{caption = 'and/or', y = 26, fontSize = 18, x = '0%', width = '100%', align = 'center'},
+-- 		Label:New{caption = 'Select AI', y = 46, fontSize = 18, x = '0%', width = '100%', align = 'center'},
+-- 		Label:New{caption = 'To edit', y = 66, fontSize = 18, x = '0%', width = '100%', align = 'center'},
+-- 	}
+-- })
 
 
 ---------------------------
@@ -269,8 +270,8 @@ Match:AddChild(Label:New{
 })
 
 Match:AddChild(Label:New{
-	name    = 'MapName',
-	caption = VFS.GetMaps()[1] or '',
+	name     = 'MapName',
+	caption  = Match.Script.mapname,
 	fontSize = 20,
 	x        = 70,
 	y        = 120,
@@ -280,56 +281,63 @@ Match:AddChild(Label:New{
 -- TODO add small translucent info overlay over minimap (wind, size, teams, etc..)
 -- TODO get and show team start boxes, or at least start positions
 -- TODO add tabpanel to include: Minimap, Metalmap, infomap
-local MiniMap = Button:New{
-	name    = 'Minimap',
-	caption = 'MiniMap for ' .. string.sub(VFS.GetMaps()[1], 1, 10) .. '..',
-	x       = 0,
-	width   = 250,
-	y       = 0,
-	bottom  = 0,
-	focusColor = {0,0,0,0.5},
-	borderColor = {0,0,0,0},
-	backgroundColor = {0,0,0,0.5},
-}
 
 local MapList = ScrollPanel:New{
+	parent = match,
 	name   = 'Map Selection',
 	right  = 0,
-	width  = 185,
-	y      = 0,
+	width  = 200,
+	height = 200,
 	bottom = 0,
 	children = {Label:New{caption = '-- Select Map --', y = 6, fontSize = 18,  x = '0%', width = '100%', align = 'center'}}
-
 }
-
-for _, map in pairs(VFS.GetMaps()) do
+for _, name in pairs(VFS.GetMaps()) do
+	local info = VFS.GetArchiveInfo(name)
 	MapList:AddChild(Button:New{
-		caption  = map,
+		caption  = info.name,
 		x        = 0,
 		y        = #MapList.children * 30,
 		width    = '100%',
 		height   = 26,
 		OnClick = {
 			function(self)
-				Match.Script.mapname = self.caption
-				Match:GetChildByName('MapName'):SetCaption(self.caption)
-				MiniMap:SetCaption('MiniMap for ' .. string.sub(self.caption, 1, 10) .. '..')
+				Match.Script.mapname = info.name
+				Match:GetChildByName('MapName'):SetCaption(info.name)
 			end
 		}
 	})
 end
 
 
-Match:AddChild(Panel:New{
-	name    = 'Map Config',
-	x       = 0,
-	y       = 150,
-	bottom  = 6,
-	width   = '74%',
-	padding = {0,0,0,0},
-	children = {MiniMap, MapList}
-})
--- End
+local GameList = ScrollPanel:New{
+	name   = 'Game Selection',
+	parent = match,
+	right  = 0,
+	width  = 200,
+	height = 200,
+	bottom = 200,
+	children = {Label:New{caption = '-- Select Game --', y = 6, fontSize = 18,  x = '0%', width = '100%', align = 'center'}}
+}
+for _, name in pairs(VFS.GetGames()) do
+	local info = VFS.GetArchiveInfo(name)
+	GameList:AddChild(Button:New{
+		caption  = info.name,
+		x        = 0,
+		y        = #GameList.children * 30,
+		width    = '100%',
+		height   = 26,
+		OnClick = {
+			function(self)
+				for key, data in pairs(info) do Spring.Echo(key .. ' = ' .. data) end
+				Match.Script.gametype = info.name
+				Match:GetChildByName('Game Name'):SetCaption(info.name_pure)
+			end
+		}
+	})
+end
+
+Match:AddChild(MapList)
+Match:AddChild(GameList)
 
 -- Control will essentially attached to a Menu button
 return Match

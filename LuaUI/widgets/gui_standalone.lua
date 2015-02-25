@@ -90,29 +90,6 @@ local function showMenu(menu)
 	MenuWindow:AddChild(menu)
 end
 
-local function initBG()
-
-	Background = Control:New{
-		x       = 0,
-		y       = 0,
-		right   = 0,
-		bottom  = 0,
-		padding = {0,0,0,0},
-		margin  = {0,0,0,0},
-		parent  = Screen
-	}
-
-	Background:AddChild(Image:New{
-		y          = 0,
-		x          = 0,
-		right      = 0,
-		bottom     = 0,
-		keepAspect = false,
-		file       = 'LuaUI/images/gradient.png',
-	})
-
-end
-
 local function initMain()
 
   local width = scrW * 0.9
@@ -167,11 +144,12 @@ local function initMain()
 end
 
 function widget:Initialize()
-	-- WG.GetMapInfo('Ravaged_2')
+	-- get rid of engine UI
 	Spring.SendCommands("ResBar 0", "ToolTip 0","fps 0","console 0")
+  gl.SlaveMiniMap(true)
+
 	getVars()
 	initMain()
-	initBG()
 
   -- load from console buffer
   local buffer = Spring.GetConsoleBuffer(40)
@@ -180,6 +158,10 @@ function widget:Initialize()
   	widget:AddConsoleLine(line.text,line.priority)
   end
 
+end
+
+function widget:DrawScreen() 
+		glConfigMiniMap(0,0,0,0)
 end
 
 function widget:AddConsoleLine(text)

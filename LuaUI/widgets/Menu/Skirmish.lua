@@ -87,82 +87,6 @@ local sideImage = function(side, color)
 	return image
 end
 
-local getLayout = function(AI)
-	return Control:New{
-		x = 0,
-		y = 0,
-		right = 0,
-		bottom = 0,
-		padding = {0,0,0,0},
-		children = {
-			Label:New{
-				caption = 'Name',
-				fontsize = 20,
-				x = 5,
-				y = 10,
-				width = '100%',
-			},
-			EditBox:New{
-				x = 20,
-				right = 20,
-				y = 30,
-				height = 30,
-				text = AI.name,
-				OnFocusUpdate = {
-					function(self)
-						AI.name = self.text
-					end
-				}
-			},
-			Label:New{
-				y = 64,
-				x = 5,
-				width = '100%',
-				caption = 'Side',
-				fontsize = 20,
-			},
-			Button:New{
-				y = 90,
-				x = 5,
-				width = 65,
-				height = 65,
-				caption = '',
-				padding = {0,0,0,0},
-				children = {sideImage('ARM', AI.color)},
-				OnClick = {
-					function()
-						AI.side = 'ARM'
-						AI:ClearChildren()
-						AI:AddChild(sideImage('ARM', AI.color))
-					end
-				}
-			},
-			Button:New{
-				y = 90,
-				x = 75,
-				width = 65,
-				height = 65,
-				caption = '',
-				padding = {0,0,0,0},
-				children = {sideImage('CORE', AI.color)},
-				OnClick = {
-					function()
-						AI.side = 'CORE'
-						AI:ClearChildren()
-						AI:AddChild(sideImage('CORE', AI.color))
-					end
-				}
-			},
-			Colorbars:New{
-				x = 5,
-				right = 5,
-				bottom = 10,
-				height = 50,
-				color = AI.color,
-			},
-		}
-	}
-end
 
 -- Attaches random profile and config layout to Button obj
 -- Essentially turns Button obj into AI obj
@@ -173,12 +97,10 @@ local generatePersona = function(self)
 	self.color = {math.random(),math.random(),math.random(),1}
 	self.side = math.random(10) > 5 and 'CORE' or 'ARM'
 
-	self.caption = ''
+	self.caption = self.name
 	self:AddChild(sideImage(self.side, self.color))
 
-	self.layout = getLayout(self)
-
-	-- create a replacement add AI button
+	-- create a replacement 'add AI' button
 	Match:AddChild(Button:New{
 		x = self.x + 55,
 		y = 60,
@@ -186,17 +108,10 @@ local generatePersona = function(self)
 		width = 50,
 		padding = {0,0,0,0},
 		allyTeam = 1,
-		caption = 'Add AI',
+		caption = 'Add\n AI',
 		OnClick = self.OnClick,
 	})
-
-	self.OnClick = {
-		function(self)
-			-- Match:GetChildByName('AI Config'):ClearChildren()
-			-- Match:GetChildByName('AI Config'):AddChild(self.layout)
-		end
-	}
-
+	self.OnClick = {}
 	Match.bots[self.team] = self
 end
 

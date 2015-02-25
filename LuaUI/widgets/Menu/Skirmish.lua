@@ -88,7 +88,7 @@ local sideImage = function(side, color)
 end
 
 local getLayout = function(AI)
-	local layout = Control:New{
+	return Control:New{
 		x = 0,
 		y = 0,
 		right = 0,
@@ -162,7 +162,6 @@ local getLayout = function(AI)
 			},
 		}
 	}
-	return layout
 end
 
 -- Attaches random profile and config layout to Button obj
@@ -278,9 +277,9 @@ Match:AddChild(Label:New{
 })
 
 -- TODO get minimaps somehow
--- TODO add small translucent info overlay over minimap (wind, size, teams, etc..)
--- TODO get and show team start boxes, or at least start positions
--- TODO add tabpanel to include: Minimap, Metalmap, infomap
+--  small translucent info overlay over minimap (wind, size, teams, etc..)
+--  get and show team start boxes, or at least start positions
+--  add tabpanel to include: Minimap, Metalmap, infomap
 
 local MapList = ScrollPanel:New{
 	parent = match,
@@ -291,6 +290,18 @@ local MapList = ScrollPanel:New{
 	y      = 0,
 	children = {Label:New{caption = '-- Select Map --', y = 6, fontSize = 18,  x = '0%', width = '100%', align = 'center'}}
 }
+
+local GameList = ScrollPanel:New{
+	name   = 'Game Selection',
+	parent = match,
+	right  = 0,
+	width  = 200,
+	height = '49%',
+	bottom = 0,
+	children = {Label:New{caption = '-- Select Game --', y = 6, fontSize = 18,  x = '0%', width = '100%', align = 'center'}}
+}
+
+-- fill list of maps
 for _, name in pairs(VFS.GetMaps()) do
 	local info = VFS.GetArchiveInfo(name)
 	MapList:AddChild(Button:New{
@@ -308,16 +319,7 @@ for _, name in pairs(VFS.GetMaps()) do
 	})
 end
 
-
-local GameList = ScrollPanel:New{
-	name   = 'Game Selection',
-	parent = match,
-	right  = 0,
-	width  = 200,
-	height = '49%',
-	bottom = 0,
-	children = {Label:New{caption = '-- Select Game --', y = 6, fontSize = 18,  x = '0%', width = '100%', align = 'center'}}
-}
+-- fill list of games
 for _, name in pairs(VFS.GetGames()) do
 	local info = VFS.GetArchiveInfo(name)
 	GameList:AddChild(Button:New{

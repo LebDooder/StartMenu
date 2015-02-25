@@ -68,7 +68,6 @@ local function StartScript()
 		end
 	end
 
-	WriteScript(Match.Script)
 	Spring.Reload(ScriptTXT(Match.Script))
 end
 
@@ -90,7 +89,7 @@ end
 
 -- Attaches random profile and config layout to Button obj
 -- Essentially turns Button obj into AI obj
-local generatePersona = function(self)
+local attachProfile = function(self)
 
 	self.name = Match.botNames[math.random(5)]
 	self.team = #Match.bots + 1
@@ -100,8 +99,8 @@ local generatePersona = function(self)
 	self.caption = self.name
 	self:AddChild(sideImage(self.side, self.color))
 
-	-- create a replacement 'add AI' button
-	Match:AddChild(Button:New{
+	-- create a replacement 'Add AI' button
+	self.parent:AddChild(Button:New{
 		x = self.x + 55,
 		y = 60,
 		height = 50,
@@ -154,24 +153,8 @@ Match:AddChild(Button:New{
 	width    = 50,
 	padding  = {0,0,0,0},
 	allyTeam = 1,
-	OnClick  = {generatePersona},
+	OnClick  = {attachProfile},
 })
-
--- Match:AddChild(Panel:New{
--- 	name     = 'AI Config',
--- 	right    = 0,
--- 	y        = 150,
--- 	bottom   = 6,
--- 	width    = '25%',
--- 	padding  = {0,0,0,0},
--- 	children = {
--- 		Label:New{caption = 'Add AI', y = 6, fontSize = 18,  x = '0%', width = '100%', align = 'center'},
--- 		Label:New{caption = 'and/or', y = 26, fontSize = 18, x = '0%', width = '100%', align = 'center'},
--- 		Label:New{caption = 'Select AI', y = 46, fontSize = 18, x = '0%', width = '100%', align = 'center'},
--- 		Label:New{caption = 'To edit', y = 66, fontSize = 18, x = '0%', width = '100%', align = 'center'},
--- 	}
--- })
-
 
 ---------------------------
 -- Map Selection UI
@@ -237,6 +220,7 @@ end
 -- fill list of games
 for _, name in pairs(VFS.GetGames()) do
 	local info = VFS.GetArchiveInfo(name)
+	local sides = include("games/bar.sdd/gamedata/sidedata.lua")
 	GameList:AddChild(Button:New{
 		caption  = info.name,
 		x        = 0,
@@ -245,7 +229,7 @@ for _, name in pairs(VFS.GetGames()) do
 		height   = 26,
 		OnClick = {
 			function(self)
-				for key, data in pairs(info) do Spring.Echo(key .. ' = ' .. data) end
+				for _, data in pairs(sides) do Spring.Echo(data.name) end
 				Match.Script.gametype = info.name
 				Match:GetChildByName('Game Name'):SetCaption(info.name_pure)
 			end

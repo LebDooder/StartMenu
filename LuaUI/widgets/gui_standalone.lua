@@ -109,7 +109,6 @@ local function initMain()
     Skirmish    = VFS.Include(MENU_DIR .. 'Skirmish.lua'),
 		Debug       = VFS.Include(MENU_DIR .. 'Debug.lua'),
     -- Options    = VFS.Include(MENU_DIR .. 'Options.lua'),
-		-- Online      = VFS.Include(MENU_DIR .. 'Online.lua'),
 	}
 
 
@@ -128,16 +127,11 @@ local function initMain()
 			end
 		},
 		children = {
-			-- TabBarItem:New{ caption = 'Online', width = 100, fontsize = 20},
 			TabBarItem:New{ caption = 'Skirmish', width = 100, fontsize = 20},
 			TabBarItem:New{ caption = 'Missions', width = 100, fontsize = 20},
 			TabBarItem:New{ caption = 'Chickens', width = 100, fontsize = 20},
       TabBarItem:New{ caption = 'Options', width = 100, fontsize = 20},
       TabBarItem:New{ caption = 'Debug', width = 100, fontsize = 20},
-			-- TabBarItem:New{ caption = 'Quit',
-				-- width = '100%', fontsize = 20,
-				-- OnClick = {function() Spring.SendCommands{'quit'} end}
-			-- },
 		}
 	}
 
@@ -160,8 +154,8 @@ function widget:Initialize()
 
 end
 
-function widget:DrawScreen() 
-		glConfigMiniMap(0,0,0,0)
+function widget:GameSetup()
+  return true, true
 end
 
 function widget:AddConsoleLine(text)
@@ -185,58 +179,30 @@ function widget:AddConsoleLine(text)
   })
 end
 
-function widget:ShutDown()
-	MenuWindow:Dispose()
-	--MenuButtons:Dispose()
-end
-
 function ScriptTXT(script)
-  local txt = '[Game]\n{\n\n'
+  local string = '[Game]\n{\n\n'
 
   -- First write Tables
   for key, value in pairs(script) do
     if type(value) == 'table' then
-      txt = txt..'\t['..key..']\n\t{\n'
+      string = string..'\t['..key..']\n\t{\n'
       for key, value in pairs(value) do
-        txt = txt..'\t\t'..key..'='..value..';\n'
+        string = string..'\t\t'..key..' = '..value..';\n'
       end
-      txt = txt..'\t}\n\n'
+      string = string..'\t}\n\n'
     end
   end
 
   -- Then the rest (purely for aesthetics)
   for key, value in pairs(script) do
     if type(value) ~= 'table' then
-      txt = txt..'\t'..key..'='..value..';\n'
+      string = string..'\t'..key..' = '..value..';\n'
     end
   end
+  string = string..'}'
 
-  txt = txt..'}'
-
-  return txt
-end
-
-function WriteScript(script)
-	local txt = io.open('script.txt', 'w+')
-	txt:write('[Game]\n{\n\n')
-
-	-- First write Tables
-	for key, value in pairs(script) do
-		if type(value) == 'table' then
-			txt:write('\t['..key..']\n\t{\n')
-			for key, value in pairs(value) do
-				txt:write('\t\t'..key..' = '..value..';\n')
-			end
-			txt:write('\t}\n\n')
-		end
-	end
-
-	-- Then the rest (purely for aesthetics)
-	for key, value in pairs(script) do
-		if type(value) ~= 'table' then
-			txt:write('\t'..key..' = '..value..';\n')
-		end
-	end
-	txt:write('}')
-	txt:close()
+  -- local txt = io.open('script.txt', 'w+')
+  -- txt:write(string)
+	-- txt:close()
+  return string
 end

@@ -5,6 +5,7 @@ local Match = Control:New{
 	padding = {0,0,0,0},
 	bots = {},
 	botNames = {'Fred','Fred Jr.','Steve','John','Greg'},
+	allyTeams = 0,
 	Script = {
 		player0  =  {
 			isfromdemo = 0,
@@ -29,7 +30,7 @@ local Match = Control:New{
 		hostip = '127.0.0.1',
 		hostport = 8452,
 		ishost = 1,
-		mapname = 'Pick A Map',
+		mapname = 'Undecided',
 		myplayername = 'Local',
 		nohelperais = 0,
 		numplayers = 1,
@@ -97,19 +98,21 @@ local attachProfile = function(self)
 	self.side = math.random(10) > 5 and 'CORE' or 'ARM'
 
 	self.caption = self.name
-	self:AddChild(sideImage(self.side, self.color))
+	-- self:AddChild(sideImage(self.side, self.color))
 
 	-- create a replacement 'Add AI' button
 	self.parent:AddChild(Button:New{
 		x = self.x + 55,
-		y = 60,
+		y = 0,
 		height = 50,
 		width = 50,
 		padding = {0,0,0,0},
-		allyTeam = 1,
+		allyTeam = self.allyTeam,
 		caption = 'Add\n AI',
 		OnClick = self.OnClick,
 	})
+
+	AddTeam(self.allyTeam + 1)
 	self.OnClick = {}
 	Match.bots[self.team] = self
 end
@@ -137,41 +140,72 @@ Match:AddChild(Button:New{
 -- Teams and Bot UI
 -- TODO add allyTeams:
 --  YOU vs (bot)(add AI) vs (add AI)
+local function AddPlayer(self)
+	self.caption = 'YOU'
+	AddTeam(1)
+end
 
-Match:AddChild(Label:New{
-	caption  = 'YOU vs',
-	fontSize = 24,
-	x        = 20,
-	y        = 70,
-})
-
-Match:AddChild(Button:New{
-	caption  = 'Add AI',
-	x        = 120,
-	y        = 60,
-	height   = 50,
-	width    = 50,
-	padding  = {0,0,0,0},
-	allyTeam = 1,
-	OnClick  = {attachProfile},
-})
-
+function AddTeam(team)
+	if Match.allyTeams > team then return end
+	local teamPlayers = Control:New{
+		height = 60,
+		width = 300,
+		x = 20,
+		y = (team + 1) * 70,
+		children = {
+			Button:New{
+				caption  = 'Add\n AI',
+				x        = team == 0 and 55 or 40,
+				bottom   = 0,
+				height   = 50,
+				width    = 50,
+				padding  = {0,0,0,0},
+				allyTeam = team,
+				OnClick  = {attachProfile},
+			}
+		}
+	}
+	if team > 0 then
+		teamPlayers:AddChild(Label:New{
+			caption  = 'vs',
+			fontSize = 24,
+			x        = 0,
+			y        = 0,
+		})
+	else
+		teamPlayers:AddChild(Button:New{
+			caption  = 'Join',
+			x        = 0,
+			bottom   = 0,
+			height   = 50,
+			width    = 50,
+			padding  = {0,0,0,0},
+			allyTeam = team,
+			OnClick  = {AddPlayer},
+		})
+	end
+	Match:AddChild(teamPlayers)
+	Match.allyTeams = team + 1
+end
+AddTeam(0)
 ---------------------------
 -- Map Selection UI
 
 Match:AddChild(Label:New{
 	caption  = 'On',
-	fontSize = 20,
-	x        = 36,
-	y        = 120,
+	fontSize = 24,
+	height   = 24,
+	x        = 30,
+	bottom   = 25,
 })
 
 Match:AddChild(Label:New{
 	name     = 'MapName',
 	caption  = Match.Script.mapname,
-	fontSize = 20,
+	fontSize = 40,
+	height   = 40,
 	x        = 70,
-	y        = 120,
+	bottom   = 5,
 })
 
 -- TODO get minimaps somehow
@@ -179,24 +213,24 @@ Match:AddChild(Label:New{
 --  get and show team start boxes, or at least start positions
 --  add tabpanel to include: Minimap, Metalmap, infomap
 
+local GameList = ScrollPanel:New{
+	name   = 'Game Selection',
+	parent = match,
+	right  = 0,
+	width  = 275,
+	height = '39%',
+	y      = 0,
+	children = {Label:New{caption = '-- Select Game --', y = 6, fontSize = 18,  x = '0%', width = '100%', align = 'center'}}
+}
+
 local MapList = ScrollPanel:New{
 	parent = match,
 	name   = 'Map Selection',
 	right  = 0,
 	width  = 200,
-	height = '50%',
-	y      = 0,
-	children = {Label:New{caption = '-- Select Map --', y = 6, fontSize = 18,  x = '0%', width = '100%', align = 'center'}}
-}
-
-local GameList = ScrollPanel:New{
-	name   = 'Game Selection',
-	parent = match,
-	right  = 0,
-	width  = 200,
-	height = '49%',
+	height = '60%',
 	bottom = 0,
-	children = {Label:New{caption = '-- Select Game --', y = 6, fontSize = 18,  x = '0%', width = '100%', align = 'center'}}
+	children = {Label:New{caption = '-- Select Map --', y = 6, fontSize = 18,  x = '0%', width = '100%', align = 'center'}}
 }
 
 -- fill list of maps
@@ -241,6 +275,7 @@ for _, dir in pairs(VFS.SubDirs("games/")) do
 		-- local sides = include(dir .. "gamedata/sidedata.lua")
 		GameList:AddChild(Button:New{
 			caption  = info.name,
+			tooltip  = info.version or '',
 			x        = 0,
 			y        = #GameList.children * 30,
 			width    = '100%',
@@ -248,7 +283,7 @@ for _, dir in pairs(VFS.SubDirs("games/")) do
 			OnClick = {
 				function(self)
 					-- for _, data in pairs(sides) do Spring.Echo(data.name) end
-					Match.Script.gametype = info.name
+					Match.Script.gametype = info.name .. ' ' ..  info.version or ''
 					Match:GetChildByName('Game Name'):SetCaption(info.name)
 				end
 			}

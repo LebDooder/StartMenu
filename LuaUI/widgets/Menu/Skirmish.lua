@@ -99,13 +99,14 @@ local attachProfile = function(self)
 
 	self.caption = self.name
 	-- self:AddChild(sideImage(self.side, self.color))
-
+	self.width = 50
+	self.height = 50
 	-- create a replacement 'Add AI' button
 	self.parent:AddChild(Button:New{
 		x = self.x + 55,
 		y = 0,
-		height = 50,
-		width = 50,
+		height = 40,
+		width = 40,
 		padding = {0,0,0,0},
 		allyTeam = self.allyTeam,
 		caption = 'Add\n AI',
@@ -157,8 +158,8 @@ function AddTeam(team)
 				caption  = 'Add\n AI',
 				x        = team == 0 and 55 or 40,
 				bottom   = 0,
-				height   = 50,
-				width    = 50,
+				height   = 40,
+				width    = 40,
 				padding  = {0,0,0,0},
 				allyTeam = team,
 				OnClick  = {attachProfile},

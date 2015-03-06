@@ -11,7 +11,7 @@ local Match = Control:New{
 			isfromdemo = 0,
 			name = 'Local',
 			rank = 0,
-			spectator = 0,
+			spectator = 1,
 			team = 0,
 		},
 
@@ -144,6 +144,7 @@ Match:AddChild(Button:New{
 local function AddPlayer(self)
 	self.caption = 'YOU'
 	AddTeam(1)
+	Match.Script.Player0.spectator = 0
 end
 
 function AddTeam(team)

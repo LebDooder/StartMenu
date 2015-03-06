@@ -115,8 +115,8 @@ local function getVars()
   	local obj = obj
 
   	local toggle = function(self)
-          Settings[self.name] = self.checked
-  		Spring.SendCommands(self.name)
+      Settings[self.name] = self.checked
+  		Spring.SendCommands(self.name .. ' ' .. ( self.checked and 0 or 1 ) )
   	end
 
   	local checkBox = Chili.Checkbox:New{

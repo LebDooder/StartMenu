@@ -252,68 +252,39 @@ for _, name in pairs(VFS.GetMaps()) do
 	})
 end
 
--- local function AddItem(List,info)
--- 	List:AddChild(Button:New{
--- 		caption  = info.name,
--- 		x        = 0,
--- 		y        = #List.children * 30,
--- 		width    = '100%',
--- 		height   = 26,
--- 		OnClick = {
--- 			function(self)
--- 				-- for _, data in pairs(sides) do Spring.Echo(data.name) end
--- 				Match.Script.gametype = info.name
--- 				Match:GetChildByName('Game Name'):SetCaption(info.name)
--- 			end
--- 		}
--- 	})
--- end
-
 -- fill list of games
+local function AddGame(info)
+	-- info.sides = include(dir .. "gamedata/sidedata.lua")
+	if info.modtype == 0 then return end
+	info.version = info.version or ''
+	GameList:AddChild(Button:New{
+		caption  = info.name,
+		tooltip  = info.version,
+		x        = 0,
+		y        = #GameList.children * 30,
+		width    = '100%',
+		height   = 26,
+		OnClick = {
+			function(self)
+				Match.Script.gametype = info.name .. ' ' ..  info.version
+				Match:GetChildByName('Game Name'):SetCaption(info.name)
+			end
+		}
+	})
+end
+
 for _, dir in pairs(VFS.SubDirs("games/")) do
 	if dir:match('.sdd') and VFS.FileExists(dir .. "modinfo.lua") then
-		local info = include(dir .. "modinfo.lua")
-		info.version = info.version or ''
-		-- local sides = include(dir .. "gamedata/sidedata.lua")
-		GameList:AddChild(Button:New{
-			caption  = info.name,
-			tooltip  = info.version,
-			x        = 0,
-			y        = #GameList.children * 30,
-			width    = '100%',
-			height   = 26,
-			OnClick = {
-				function(self)
-					-- for _, data in pairs(sides) do Spring.Echo(data.name) end
-					Match.Script.gametype = info.name .. ' ' ..  info.version
-					Match:GetChildByName('Game Name'):SetCaption(info.name)
-				end
-			}
-		})
+		AddGame(include(dir .. "modinfo.lua"))
 	end
 end
 
--- fill list of games
 for _, filename in pairs(VFS.DirList("games/")) do
 	if filename:match('.sd7') or filename:match('.sdz') then
-		local info = VFS.UseArchive(filename, function() return include("modinfo.lua") end)
-		-- local sides = include(dir .. "gamedata/sidedata.lua")
-		GameList:AddChild(Button:New{
-			caption  = info.name,
-			x        = 0,
-			y        = #GameList.children * 30,
-			width    = '100%',
-			height   = 26,
-			OnClick = {
-				function(self)
-					-- for _, data in pairs(sides) do Spring.Echo(data.name) end
-					Match.Script.gametype = info.name
-					Match:GetChildByName('Game Name'):SetCaption(info.name)
-				end
-			}
-		})
+		AddGame(VFS.UseArchive(filename, function() return include("modinfo.lua") end))
 	end
 end
+----------------------
 
 Match:AddChild(MapList)
 Match:AddChild(GameList)

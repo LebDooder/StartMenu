@@ -1,10 +1,10 @@
 local Options = Control:New{
-	x = 0, y = 0, right = 0, bottom = 0,
+	x = 14, y = 14, right = 0, bottom = 14,
 	name = 'Options',
 }
 
 Options:AddChild(Stack{
-  name = 'Left',
+  name = 'Graphics',
   scroll = true,
   x = 0,
   width = '40%',
@@ -40,5 +40,11 @@ Options:AddChild(Stack{
   }
 })
 
+-- Options:AddChild(Stack{
+  -- name = 'Sound',
+  -- scroll = true,
+  -- x = '60%',
+  -- width = '40%'
+-- })
 
 return Options

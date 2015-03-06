@@ -1,10 +1,13 @@
 local modinfo = {
-	name = "SKOLM",
-	shortname = "SKOLM",
-	game = "Menu",
-	description = "Some kind of lua menu",
-	version = "alpha"
+	name = "StartScreen",
+	shortname = "StartScreen",
+	game = "StartScreen",
+	shortgame = "StartScreen",
+	description = "Game with directory structure + major files",
+	url = "http://www.springrts.com/wiki/SpringABC",
+	
 	modtype = "1",
+
 	depend = {
 		"cursors.sdz",
 	}

@@ -91,6 +91,7 @@ local function getVars()
   		Chili.Label:New{
   			x=0,
   			y=0,
+        fontsize = 18,
   			caption=obj.title or obj.name,
   		})
 
@@ -135,8 +136,6 @@ local function getVars()
   	return checkBox
   end
 
-  ----------------------------
-  --
   Slider = function(obj)
   	local obj = obj
 
@@ -154,26 +153,25 @@ local function getVars()
   		Spring.SendCommands(obj.name..' '..value)
   	end
 
-  	trackbar:AddChild(
-  		Chili.Label:New{
-  			x       = 0,
-  			y       = 0,
-  			caption = obj.title or obj.name,
-  		})
+    trackbar:AddChild(Chili.Label:New{
+      x        = 0,
+      y        = 0,
+      fontsize = 18,
+      caption  = obj.title or obj.name,
+    })
 
-  	trackbar:AddChild(
-  		Chili.Trackbar:New{
-  			name     = obj.name,
-  			height   = 25,
-  			x        = '10%',
-  			width    = '80%',
-  			y        = 15,
-  			min      = obj.min or 0,
-  			max      = obj.max or 1000,
-  			step     = obj.step or 100,
-  			value    = Settings[obj.name] or 500,
-  			OnChange = {applySetting},
-  		})
+  	trackbar:AddChild(Chili.Trackbar:New{
+      name     = obj.name,
+      height   = 25,
+      x        = '10%',
+      width    = '80%',
+      y        = 15,
+      min      = obj.min or 0,
+      max      = obj.max or 1000,
+      step     = obj.step or 100,
+      value    = Settings[obj.name] or 500,
+      OnChange = {applySetting},
+  	})
 
   	return trackbar
   end

@@ -13,9 +13,6 @@ end
 
 local MENU_DIR = 'LuaUI/Widgets/Menu/'
 
-local Chili, Screen, tabs
-local MenuWindow, MenuButtons, scrH, scrW
-
 local function getVars()
 	Chili       = WG.Chili
 	Screen      = Chili.Screen0
@@ -128,8 +125,8 @@ local function initMain()
 		},
 		children = {
 			TabBarItem:New{ caption = 'Skirmish', width = 100, fontsize = 20},
-			TabBarItem:New{ caption = 'Missions', width = 100, fontsize = 20},
-			TabBarItem:New{ caption = 'Chickens', width = 100, fontsize = 20},
+			--TabBarItem:New{ caption = 'Missions', width = 100, fontsize = 20},
+			--TabBarItem:New{ caption = 'Chickens', width = 100, fontsize = 20},
       TabBarItem:New{ caption = 'Options', width = 100, fontsize = 20},
       TabBarItem:New{ caption = 'Debug', width = 100, fontsize = 20},
 		}

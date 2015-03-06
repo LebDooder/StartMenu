@@ -194,6 +194,7 @@ local function getVars()
   					itemPadding = {0,0,0,0},
   					itemMargin  = {0,0,0,0},
   					children    = obj.children or {},
+            verticalSmartScroll  = obj.smartScroll or true,
   					preserverChildrenOrder = true
   				}
   			}

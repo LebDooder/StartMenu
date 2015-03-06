@@ -1,14 +1,13 @@
-local Options = ScrollPanel:New{
-  borderColor = {0,0,0,0},backgroundColor = {0,0,0,0},
+local Options = Control:New{
 	x = 0, y = 0, right = 0, bottom = 0,
 	name = 'Options',
 }
 
-
-
 Options:AddChild(Stack{
   name = 'Left',
+  scroll = true,
   x = 0,
+  width = '40%',
   children = {
     ComboBox{y=0,title='Water',name='Water', --not 'ReflectiveWater' because we use SendCommands instead of SetConfigInt to apply settings (some settings seem to only take effect immediately this way)
       labels={'Basic','Reflective','Dynamic','Refractive','Bump-Mapped'},
@@ -28,14 +27,6 @@ Options:AddChild(Stack{
     Slider{name='UnitIconDist',title='Unit Icon Distance', max = 600, step = 1},
     Slider{name='MaxParticles',title='Max Particles', max = 5000},
     Slider{name='MaxNanoParticles',title='Max Nano Particles', max = 5000},
-
-  }
-})
-
-Options:AddChild(Stack{
-  name = 'Right',
-  x = '50%',
-  children = {
     CheckBox{title = 'Advanced Map Shading', name = 'AdvMapShading', tooltip = "Toggle advanced map shading mode"},
     CheckBox{title = 'Advanced Model Shading', name = 'AdvModelShading', tooltip = "Toggle advanced model shading mode"},
     CheckBox{title = 'Deferred Map Shading', name = 'AllowDeferredMapRendering', tooltip = "Toggle deferred model shading mode (requires advanced map shading)"},
@@ -48,5 +39,6 @@ Options:AddChild(Stack{
     CheckBox{title = 'Vertical Sync', name = 'VSync', tooltip = "Enables/Disables V-sync"},
   }
 })
+
 
 return Options

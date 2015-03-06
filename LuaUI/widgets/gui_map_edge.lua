@@ -115,7 +115,7 @@ options = {
 	curvature = {
 		name = "Curvature Effect",
 		type = 'bool',
-		value = false,
+		value = true,
 		desc = 'Add a curvature to the extension.',
 		OnChange = ResetWidget,
 	},

@@ -12,14 +12,34 @@ function widget:GetInfo()
 end
 
 local MENU_DIR = 'LuaUI/Widgets/Menu/'
+local Settings = {}
 
 local function getVars()
+
+  Settings['Water']                       = Spring.GetConfigInt('ReflectiveWater')
+  Settings['ShadowMapSize']               = Spring.GetConfigInt('ShadowMapSize')
+  Settings['Shadows']                     = Spring.GetConfigInt('Shadows')
+
+  Settings['AdvMapShading']               = Spring.GetConfigInt('AdvMapShading', 1) == 1
+  Settings['AdvModelShading']             = Spring.GetConfigInt('AdvModelShading', 1) == 1
+  Settings['AllowDeferredMapRendering']   = Spring.GetConfigInt('AllowDeferredMapRendering', 1) == 1
+  Settings['AllowDeferredModelRendering'] = Spring.GetConfigInt('AllowDeferredModelRendering', 1) == 1
+
+  Settings['UnitIconDist']                = Spring.GetConfigInt('UnitIconDist', 280) -- number is used if no config is set
+  Settings['UnitLodDist']                 = Spring.GetConfigInt('UnitLodDist', 280)
+  Settings['MaxNanoParticles']            = Spring.GetConfigInt('MaxNanoParticles', 1000)
+  Settings['MaxParticles']                = Spring.GetConfigInt('MaxParticles', 1000)
+  Settings['MapBorder']                   = Spring.GetConfigInt('MapBorder') == 1 -- turn 0/1 to bool
+  Settings['3DTrees']                     = Spring.GetConfigInt('3DTrees') == 1
+  Settings['MapMarks']                    = Spring.GetConfigInt('MapMarks') == 1
+  Settings['DynamicSky']                  = Spring.GetConfigInt('DynamicSky') == 1
+  Settings['DynamicSun']                  = Spring.GetConfigInt('DynamicSun') == 1
+
 	Chili       = WG.Chili
 	Screen      = Chili.Screen0
 	Checkbox    = Chili.Checkbox
 	Control     = Chili.Control
 	Colorbars   = Chili.Colorbars
-	ComboBox    = Chili.ComboBox
 	Button      = Chili.Button
 	Label       = Chili.Label
 	Line        = Chili.Line
@@ -38,7 +58,126 @@ local function getVars()
 	TabBarItem  = Chili.TabBarItem
   TextBox     = Chili.Textbox
 	Panel       = Chili.Panel
-  Stack       = function(obj)
+  ComboBox    = function(obj)
+  	local obj = obj
+  	local options = obj.options or obj.labels
+
+  	local comboBox = Chili.Control:New{
+  		y       = obj.y,
+  		width   = obj.width or '100%',
+  		height  = 40,
+  		x       = 0,
+  		padding = {0,0,0,0}
+  	}
+
+  	local selected
+  	for i = 1, #obj.labels do
+  		if obj.labels[i] == Settings[obj.name] then selected = i end
+  	end
+
+
+  	local function applySetting(obj, listID)
+  		local value   = obj.options[listID] or ''
+  		local setting = obj.name or ''
+
+      Spring.SendCommands(setting..' '..value)
+  		Settings[setting] = obj.items[listID]
+  		if tonumber(value) then
+  			Spring.SetConfigInt(setting, value)
+  		end
+  	end
+
+  	comboBox:AddChild(
+  		Chili.Label:New{
+  			x=0,
+  			y=0,
+  			caption=obj.title or obj.name,
+  		})
+
+  	comboBox:AddChild(
+  		Chili.ComboBox:New{
+  			name     = obj.name,
+  			height   = 25,
+  			x        = '10%',
+  			width    = '80%',
+  			y        = 15,
+  			selected = selected,
+  			options  = options,
+  			items    = obj.labels,
+  			OnSelect = {obj.OnSelect or applySetting},
+  		})
+
+  	return comboBox
+  end
+
+  CheckBox = function(obj)
+  	local obj = obj
+
+  	local toggle = function(self)
+          Settings[self.name] = self.checked
+  		Spring.SendCommands(self.name)
+  	end
+
+  	local checkBox = Chili.Checkbox:New{
+  		name      = obj.name,
+  		caption   = obj.title or obj.name,
+  		checked   = Settings[obj.name] or false,
+  		tooltip   = obj.tooltip or '',
+  		y         = obj.y,
+  		width     = obj.width or '80%',
+  		height    = 20,
+  		x         = '10%',
+  		textalign = 'left',
+  		boxalign  = 'right',
+      fontsize  = 18,
+  		OnChange  = {toggle}
+  	}
+  	return checkBox
+  end
+
+  ----------------------------
+  --
+  Slider = function(obj)
+  	local obj = obj
+
+  	local trackbar = Chili.Control:New{
+  		y       = obj.y or 0,
+  		width   = obj.width or '100%',
+  		height  = 40,
+  		x       = 0,
+  		padding = {0,0,0,0}
+  	}
+
+
+  	local function applySetting(obj, value)
+  		Settings[obj.name] = value
+  		Spring.SendCommands(obj.name..' '..value)
+  	end
+
+  	trackbar:AddChild(
+  		Chili.Label:New{
+  			x       = 0,
+  			y       = 0,
+  			caption = obj.title or obj.name,
+  		})
+
+  	trackbar:AddChild(
+  		Chili.Trackbar:New{
+  			name     = obj.name,
+  			height   = 25,
+  			x        = '10%',
+  			width    = '80%',
+  			y        = 15,
+  			min      = obj.min or 0,
+  			max      = obj.max or 1000,
+  			step     = obj.step or 100,
+  			value    = Settings[obj.name] or 500,
+  			OnChange = {applySetting},
+  		})
+
+  	return trackbar
+  end
+  Stack = function(obj)
   	if obj.scroll then
       return ScrollPanel:New{
   			x        = obj.x or 0,
@@ -105,7 +244,7 @@ local function initMain()
 		PlaceHolder = Label:New{caption = 'Coming Soon..', y = 6, fontSize = 30,  x = '0%', width = '100%', align = 'center'},
     Skirmish    = VFS.Include(MENU_DIR .. 'Skirmish.lua'),
 		Debug       = VFS.Include(MENU_DIR .. 'Debug.lua'),
-    -- Options    = VFS.Include(MENU_DIR .. 'Options.lua'),
+    Options    = VFS.Include(MENU_DIR .. 'Options.lua'),
 	}
 
 

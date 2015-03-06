@@ -15,17 +15,6 @@ local Match = Control:New{
 			team = 0,
 		},
 
-		team0  =  {
-			allyteam = 0,
-			rgbcolor = '0.99609375 0.546875 0',
-			side = 'CORE',
-			teamleader = 0,
-		},
-
-		allyteam0  =  {
-			numallies = 0,
-		},
-
 		gametype = 'Pick A Game',
 		hostip = '127.0.0.1',
 		hostport = 8452,
@@ -145,6 +134,17 @@ local function AddPlayer(self)
 	self.caption = 'YOU'
 	AddTeam(1)
 	Match.Script.Player0.spectator = 0
+
+	Match.Script.team0  =  {
+		allyteam = 0,
+		rgbcolor = '0.99609375 0.546875 0',
+		side = 'CORE',
+		teamleader = 0,
+	}
+
+	Match.Script.allyteam0  =  {
+		numallies = 0,
+	}
 end
 
 function AddTeam(team)

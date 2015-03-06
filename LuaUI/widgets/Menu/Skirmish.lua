@@ -273,10 +273,11 @@ end
 for _, dir in pairs(VFS.SubDirs("games/")) do
 	if dir:match('.sdd') and VFS.FileExists(dir .. "modinfo.lua") then
 		local info = include(dir .. "modinfo.lua")
+		info.version = info.version or ''
 		-- local sides = include(dir .. "gamedata/sidedata.lua")
 		GameList:AddChild(Button:New{
 			caption  = info.name,
-			tooltip  = info.version or '',
+			tooltip  = info.version,
 			x        = 0,
 			y        = #GameList.children * 30,
 			width    = '100%',
@@ -284,7 +285,7 @@ for _, dir in pairs(VFS.SubDirs("games/")) do
 			OnClick = {
 				function(self)
 					-- for _, data in pairs(sides) do Spring.Echo(data.name) end
-					Match.Script.gametype = info.name .. ' ' ..  info.version or ''
+					Match.Script.gametype = info.name .. ' ' ..  info.version
 					Match:GetChildByName('Game Name'):SetCaption(info.name)
 				end
 			}

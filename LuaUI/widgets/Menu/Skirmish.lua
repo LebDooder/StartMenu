@@ -1,7 +1,12 @@
+local width = scrW * 0.9
+local height = width / 2
 
 local Match = Window:New{
-	x = 0, y = 0, right = 0, bottom = 0,
 	name = 'Match',
+	x      = Center(width).x,
+	y      = Center(height).y,
+	height = height,
+	width  = width,
 	padding = {5,5,5,5},
 	bots = {},
 	botNames = {'Fred','Fred Jr.','Steve','John','Greg'},

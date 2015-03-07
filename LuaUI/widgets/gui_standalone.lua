@@ -219,12 +219,13 @@ local function getVars()
 	scrW = Screen.width
 end
 
-local function showMenu(menu)
-	MenuWindow:ClearChildren()
-	MenuWindow:AddChild(menu)
+function Center(num)
+  x = (scrW - num)/2
+  y = (scrH - num)/2
+  return {x = x, y = y}
 end
 
-local function initMain()
+function initMain()
   initialized = true
   -- get rid of engine UI
   Spring.SendCommands("ResBar 0", "ToolTip 0","fps 0","console 0")
@@ -235,15 +236,6 @@ local function initMain()
   local width = scrW * 0.9
   local height = width / 2
 
-	MenuWindow = Control:New{
-		parent = Screen,
-		x      = (scrW - width)/2,
-		y      = (scrH - height)/2,
-		height = height,
-		width  = width,
-		children = {}
-	}
-
   MenuButts = Panel:New{
 		parent = Screen,
     x = 0, y = 0,
@@ -252,6 +244,8 @@ local function initMain()
     backgroundColor = {0.0,0.02,0.15,1},
 		itemMargin = {0,0,4,0},
 	}
+
+	MenuWindow = Control:New{parent = Screen, x = 0, y = 40, bottom = 0, right  = 0}
 
   AddMenu{name = 'Skirmish', content = VFS.Include(MENU_DIR .. 'Skirmish.lua')}
   AddMenu{name = 'Options', content = VFS.Include(MENU_DIR .. 'Options.lua')}

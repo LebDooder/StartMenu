@@ -1,5 +1,8 @@
-local Options = Control:New{
-	x = 14, y = 14, right = 0, bottom = 14,
+local Options = Window:New{
+	height = 525,
+	width = 400,
+	x = Center(400).x,
+	y = Center(525).y,
 	name = 'Options',
 }
 
@@ -7,7 +10,7 @@ Options:AddChild(Stack{
   name = 'Graphics',
   scroll = true,
   x = 0,
-  width = '40%',
+  width = '100%',
   children = {
     ComboBox{y=0,title='Water',name='Water', --not 'ReflectiveWater' because we use SendCommands instead of SetConfigInt to apply settings (some settings seem to only take effect immediately this way)
       labels={'Basic','Reflective','Dynamic','Refractive','Bump-Mapped'},

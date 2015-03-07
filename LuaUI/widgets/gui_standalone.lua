@@ -232,13 +232,6 @@ local function initMain()
 
   getVars()
 
-  -- load from console buffer
-  local buffer = Spring.GetConsoleBuffer(100)
-  for i=1,#buffer do
-    line = buffer[i]
-    widget:AddConsoleLine(line.text,line.priority)
-  end
-
   local width = scrW * 0.9
   local height = width / 2
 
@@ -281,7 +274,13 @@ local function initMain()
       TabBarItem:New{ caption = 'Debug', width = 100, fontsize = 20},
 		}
 	}
-
+  
+  -- load from console buffer
+  local buffer = Spring.GetConsoleBuffer(100)
+  for i=1,#buffer do
+    line = buffer[i]
+    widget:AddConsoleLine(line.text,line.priority)
+  end
 end
 
 function widget:GetConfigData()

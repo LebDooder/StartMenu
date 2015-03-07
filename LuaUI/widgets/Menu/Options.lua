@@ -12,13 +12,18 @@ Options:AddChild(Stack{
   x = 0,
   width = '100%',
   children = {
-    ComboBox{y=0,title='Water',name='Water', --not 'ReflectiveWater' because we use SendCommands instead of SetConfigInt to apply settings (some settings seem to only take effect immediately this way)
+		ComboBox{name='Skin',
+				labels=Chili.SkinHandler.GetAvailableSkins()},
+		ComboBox{title='Cursor', name = 'CursorName',
+				labels={'Chili Default','Chili Static','Spring Default','CA Classic','CA Static','Erom','Masse','K_haos_girl'},
+				options={'zk','zk_static','ba','ca','ca_static','erom','masse','k_haos_girl'}},
+    ComboBox{title='Water',name = 'Water', --not 'ReflectiveWater' because we use SendCommands instead of SetConfigInt to apply settings (some settings seem to only take effect immediately this way)
       labels={'Basic','Reflective','Dynamic','Refractive','Bump-Mapped'},
       options={0,1,2,3,4},},
-    ComboBox{y=40,title='Shadows',name='Shadows',
+    ComboBox{title='Shadows',name='Shadows',
       labels={'Off','On','Units Only'},
       options={0,1,2},},
-    ComboBox{y=40,title='Shadow Resolution',name='ShadowMapSize', --disabled because it seems this can't be changed ingame
+    ComboBox{title='Shadow Resolution',name='ShadowMapSize',
       labels={'Very Low','Low','Medium','High'},
       options={32,1024,2048,4096},
       OnSelect = function(obj, listID)
@@ -40,6 +45,7 @@ Options:AddChild(Stack{
     CheckBox{title = 'Show Map Marks', name = 'MapMarks', tooltip = "Enables/Disables rendering of map drawings/marks"},
     CheckBox{title = 'Hide Map Border', name = 'MapBorder', tooltip = "Set or toggle map border rendering"}, --something is weird with parity here
     CheckBox{title = 'Vertical Sync', name = 'VSync', tooltip = "Enables/Disables V-sync"},
+
   }
 })
 

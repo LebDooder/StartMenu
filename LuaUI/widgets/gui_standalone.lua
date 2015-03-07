@@ -79,7 +79,14 @@ local function getVars()
   		local value   = obj.options[listID] or ''
   		local setting = obj.name or ''
 
-      Spring.SendCommands(setting..' '..value)
+      if setting == 'Skin' then
+      	Chili.theme.skin.general.skinName = value
+      elseif setting == 'Cursor' then
+      	setCursor(value)
+      else
+        Spring.SendCommands(setting..' '..value)
+      end
+
   		Settings[setting] = obj.items[listID]
   		if tonumber(value) then
   			Spring.SetConfigInt(setting, value)
@@ -219,6 +226,25 @@ local function getVars()
 	scrW = Screen.width
 end
 
+function setCursor(cursorSet)
+	local cursorNames = {
+		'cursornormal','cursorareaattack','cursorattack','cursorattack',
+		'cursorbuildbad','cursorbuildgood','cursorcapture','cursorcentroid',
+		'cursorwait','cursortime','cursorwait','cursorunload','cursorwait',
+		'cursordwatch','cursorwait','cursordgun','cursorattack','cursorfight',
+		'cursorattack','cursorgather','cursorwait','cursordefend','cursorpickup',
+		'cursorrepair','cursorrevive','cursorrepair','cursorrestore','cursorrepair',
+		'cursormove','cursorpatrol','cursorreclamate','cursorselfd','cursornumber',
+        'cursorsettarget',
+	}
+
+	for i=1, #cursorNames do
+		local topLeft = (cursorNames[i] == 'cursornormal' and cursorSet ~= 'k_haos_girl')
+		if cursorSet == 'ba' then Spring.ReplaceMouseCursor(cursorNames[i], cursorNames[i], topLeft)
+		else Spring.ReplaceMouseCursor(cursorNames[i], cursorSet..'/'..cursorNames[i], topLeft) end
+	end
+end
+
 function Center(num)
   x = (scrW - num)/2
   y = (scrH - num)/2
@@ -231,6 +257,8 @@ function initMain()
   gl.SlaveMiniMap(true)
 
   getVars()
+  setCursor(Settings['CursorName'] or 'zk')
+  Chili.theme.skin.general.skinName = Settings['Skin'] or 'Robocracy'
 
   local width = scrW * 0.9
   local height = width / 2

@@ -81,7 +81,7 @@ local function getVars()
 
       if setting == 'Skin' then
       	Chili.theme.skin.general.skinName = value
-      elseif setting == 'Cursor' then
+      elseif setting == 'CursorName' then
       	setCursor(value)
       else
         Spring.SendCommands(setting..' '..value)
@@ -273,12 +273,12 @@ function initMain()
 		itemMargin = {0,0,4,0},
 	}
 
-	MenuWindow = Control:New{parent = Screen, x = 0, y = 40, bottom = 0, right  = 0}
+	MenuWindow = Control:New{parent=Screen,x=0,y=40,bottom=0,right=0,padding={0,0,0,0},margin={0,0,0,0}}
 
   AddMenu{name = 'Match Maker', width = 110, content = VFS.Include(MENU_DIR .. 'Skirmish.lua')}
   AddMenu{name = 'Options', right = 0, content = VFS.Include(MENU_DIR .. 'Options.lua')}
   AddMenu{name = 'Debug', right = 90, content = VFS.Include(MENU_DIR .. 'Debug.lua')}
-  AddMenu{name = 'BAR', width = 50}
+  AddMenu{name = 'BAR', width = 50, content = Image:New{x=0,y=0,bottom=0,right=0,keepAspect=false,file='luaUI/images/Mockup.png'}}
   AddMenu{name = 'Another Game', width = 110}
 
   initialized = true

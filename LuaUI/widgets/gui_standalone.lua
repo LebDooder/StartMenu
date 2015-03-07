@@ -235,7 +235,7 @@ local function initMain()
   local width = scrW * 0.9
   local height = width / 2
 
-	MenuWindow = Panel:New{
+	MenuWindow = Control:New{
 		parent = Screen,
 		x      = (scrW - width)/2,
 		y      = (scrH - height)/2,
@@ -244,43 +244,44 @@ local function initMain()
 		children = {}
 	}
 
-	tabs = {
-		PlaceHolder = Label:New{caption = 'Coming Soon..', y = 6, fontSize = 30,  x = '0%', width = '100%', align = 'center'},
-    Skirmish    = VFS.Include(MENU_DIR .. 'Skirmish.lua'),
-		Debug       = VFS.Include(MENU_DIR .. 'Debug.lua'),
-    Options    = VFS.Include(MENU_DIR .. 'Options.lua'),
-	}
-
-
-	MenuTabs = TabBar:New{
-		name   = 'Tabs',
+  MenuButts = Panel:New{
 		parent = Screen,
-		x      = (scrW - width)/2 + 30,
-		y      = (scrH - height)/2 - 30,
-		width  = width,
-		height = 30,
+    x = 0, y = 0,
+		width  = '100%',
+		height = 40,
+    backgroundColor = {0.0,0.0,0.2,1},
 		itemMargin = {0,0,4,0},
-		OnChange = {
-			function(_, name)
-				MenuWindow:ClearChildren()
-				MenuWindow:AddChild(tabs[name] or tabs.PlaceHolder)
-			end
-		},
-		children = {
-			TabBarItem:New{ caption = 'Skirmish', width = 100, fontsize = 20},
-			--TabBarItem:New{ caption = 'Missions', width = 100, fontsize = 20},
-			--TabBarItem:New{ caption = 'Chickens', width = 100, fontsize = 20},
-      TabBarItem:New{ caption = 'Options', width = 100, fontsize = 20},
-      TabBarItem:New{ caption = 'Debug', width = 100, fontsize = 20},
-		}
 	}
-  
+
+  AddMenu{name = 'Skirmish', content = VFS.Include(MENU_DIR .. 'Skirmish.lua')}
+  AddMenu{name = 'Options', content = VFS.Include(MENU_DIR .. 'Options.lua')}
+  AddMenu{name = 'Debug', content = VFS.Include(MENU_DIR .. 'Debug.lua')}
+  AddMenu{name = 'BAR', content = Control:New{}}
+
   -- load from console buffer
   local buffer = Spring.GetConsoleBuffer(100)
   for i=1,#buffer do
     line = buffer[i]
     widget:AddConsoleLine(line.text,line.priority)
   end
+
+end
+
+function AddMenu(obj)
+  MenuButts:AddChild(Button:New{
+    caption = obj.name,
+    content = obj.content,
+    width = 80,
+    height = 30,
+    x = #MenuButts.children * 90 + 5,
+    y = 0,
+    OnClick = {
+      function(self)
+        MenuWindow:ClearChildren()
+        MenuWindow:AddChild(self.content)
+      end
+    }
+  })
 end
 
 function widget:GetConfigData()

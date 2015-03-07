@@ -1,5 +1,5 @@
 
-local Match = Control:New{
+local Match = Panel:New{
 	x = 0, y = 0, right = 0, bottom = 0,
 	name = 'Match',
 	padding = {0,0,0,0},

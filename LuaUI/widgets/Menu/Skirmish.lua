@@ -1,8 +1,8 @@
 
-local Match = Panel:New{
+local Match = Window:New{
 	x = 0, y = 0, right = 0, bottom = 0,
 	name = 'Match',
-	padding = {0,0,0,0},
+	padding = {5,5,5,5},
 	bots = {},
 	botNames = {'Fred','Fred Jr.','Steve','John','Greg'},
 	allyTeams = 0,

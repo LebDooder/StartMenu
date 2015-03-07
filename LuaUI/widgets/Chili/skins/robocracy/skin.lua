@@ -15,6 +15,7 @@ local skin = {
 skin.general = {
   focusColor  = {1.0, 0.7, 0.1, 0.8},
   borderColor = {1.0, 1.0, 1.0, 1.0},
+  backgroundColor = {0,0,0,1},
 
   font = {
     font    = SKINDIR .. "fonts/n019003l.pfb",
@@ -91,7 +92,7 @@ skin.checkbox = {
 
 skin.editbox = {
   hintFont = table.merge({color = {1,1,1,0.7}}, skin.general.font),
-  
+
   backgroundColor = {0.1, 0.1, 0.1, 0.7},
   cursorColor     = {1.0, 0.7, 0.1, 0.8},
 
@@ -170,7 +171,7 @@ skin.scrollpanel = {
   htiles     = {7,7,7,7},
   HKnobTileImage = ":cl:tech_scrollbar_knob.png",
   HKnobTiles     = {6,8,6,8},
-
+  backgroundColor = {0,0,0,1},
   KnobColorSelected = {1,0.7,0.1,0.8},
 
   padding = {5, 5, 5, 0},

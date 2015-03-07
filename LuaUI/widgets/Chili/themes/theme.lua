@@ -9,7 +9,7 @@ theme.name = "default"
 --//=============================================================================
 --// Define default skins
 
-local defaultSkin = "Squared"
+local defaultSkin = "robocracy"
 --local defaultSkin = "DarkGlass"
 
 theme.skin = {
@@ -57,4 +57,3 @@ function theme.LoadThemeDefaults(control)
     then table.merge(control,theme.skin[control.classname]) end -- per-class defaults
   table.merge(control,theme.skin.general)
 end
-

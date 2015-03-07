@@ -249,7 +249,7 @@ local function initMain()
     x = 0, y = 0,
 		width  = '100%',
 		height = 40,
-    backgroundColor = {0.0,0.0,0.2,1},
+    backgroundColor = {0.0,0.02,0.15,1},
 		itemMargin = {0,0,4,0},
 	}
 
@@ -275,6 +275,7 @@ function AddMenu(obj)
     height = 30,
     x = #MenuButts.children * 90 + 5,
     y = 0,
+    backgroundColor = {.4, 0.05, 0, 1},
     OnClick = {
       function(self)
         MenuWindow:ClearChildren()

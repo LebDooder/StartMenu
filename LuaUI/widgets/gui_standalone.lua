@@ -272,8 +272,13 @@ function AddMenu(obj)
     backgroundColor = {.4, 0.05, 0, 1},
     OnClick = {
       function(self)
-        MenuWindow:ClearChildren()
-        MenuWindow:AddChild(self.content)
+        local Menu = self.content
+        if Menu.parent then
+          if Menu.hidden then Menu:Show(); Menu:BringToFront() else Menu:Hide() end
+        else
+          MenuWindow:AddChild(self.content)
+          Menu:BringToFront()
+        end
       end
     }
   })

@@ -15,11 +15,11 @@ local Match = Control:New{
 			team = 0,
 		},
 
-		gametype = 'Pick A Game',
+		gametype = Settings['game'] or 'Pick A Game',
 		hostip = '127.0.0.1',
 		hostport = 8452,
 		ishost = 1,
-		mapname = 'Undecided',
+		mapname = Settings['map'] or 'Some Map',
 		myplayername = 'Local',
 		nohelperais = 0,
 		numplayers = 1,
@@ -30,6 +30,7 @@ local Match = Control:New{
 
 -- Adds bots to script table, then starts the game with a generated script
 local function StartScript()
+	if #Match.bots < 1 then AddPlayer() end
 
 	-- it's easier to store and modify objects than table
 	--  so I wait until the end to put bots in the Script (no more changing)
@@ -130,10 +131,10 @@ Match:AddChild(Button:New{
 -- Teams and Bot UI
 -- TODO add allyTeams:
 --  YOU vs (bot)(add AI) vs (add AI)
-local function AddPlayer(self)
-	self.caption = 'YOU'
+function AddPlayer(self)
+	if self then self.caption = 'YOU' end
 	AddTeam(1)
-	Match.Script.Player0.spectator = 0
+	Match.Script.player0.spectator = 0
 
 	Match.Script.team0  =  {
 		allyteam = 0,
@@ -246,6 +247,7 @@ for _, name in pairs(VFS.GetMaps()) do
 		height   = 26,
 		OnClick = {
 			function(self)
+				Settings['map'] = info.name
 				Match.Script.mapname = info.name
 				Match:GetChildByName('MapName'):SetCaption(info.name)
 			end
@@ -267,6 +269,7 @@ local function AddGame(info)
 		height   = 26,
 		OnClick = {
 			function(self)
+				Settings['game'] = info.name .. ' ' ..  info.version
 				Match.Script.gametype = info.name .. ' ' ..  info.version
 				Match:GetChildByName('Game Name'):SetCaption(info.name)
 			end

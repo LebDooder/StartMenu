@@ -11,9 +11,8 @@ function widget:GetInfo()
   }
 end
 
-local MENU_DIR = 'LuaUI/Widgets/Menu/'
-local Settings = {}
-
+MENU_DIR = 'LuaUI/Widgets/Menu/'
+Settings = {}
 local function getVars()
 
   Settings['Water']                       = Spring.GetConfigInt('ReflectiveWater')
@@ -226,6 +225,19 @@ local function showMenu(menu)
 end
 
 local function initMain()
+  initialized = true
+  -- get rid of engine UI
+  Spring.SendCommands("ResBar 0", "ToolTip 0","fps 0","console 0")
+  gl.SlaveMiniMap(true)
+
+  getVars()
+
+  -- load from console buffer
+  local buffer = Spring.GetConsoleBuffer(100)
+  for i=1,#buffer do
+    line = buffer[i]
+    widget:AddConsoleLine(line.text,line.priority)
+  end
 
   local width = scrW * 0.9
   local height = width / 2
@@ -272,21 +284,15 @@ local function initMain()
 
 end
 
-function widget:Initialize()
-	-- get rid of engine UI
-	Spring.SendCommands("ResBar 0", "ToolTip 0","fps 0","console 0")
-  gl.SlaveMiniMap(true)
+function widget:GetConfigData()
+	return Settings
+end
 
-	getVars()
-	initMain()
-
-  -- load from console buffer
-  local buffer = Spring.GetConsoleBuffer(40)
-  for i=1,#buffer do
-    line = buffer[i]
-  	widget:AddConsoleLine(line.text,line.priority)
-  end
-
+function widget:SetConfigData(data)
+	if (data and type(data) == 'table') then
+		Settings = data
+    initMain()
+	end
 end
 
 function widget:GameSetup()
@@ -294,6 +300,7 @@ function widget:GameSetup()
 end
 
 function widget:AddConsoleLine(text)
+  if not tabs then return end
   local log = tabs.Debug:GetObjectByName('log')
 
   log:AddChild(Chili.TextBox:New{
@@ -336,8 +343,8 @@ function ScriptTXT(script)
   end
   string = string..'}'
 
-  -- local txt = io.open('script.txt', 'w+')
-  -- txt:write(string)
-	-- txt:close()
+  local txt = io.open('script.txt', 'w+')
+  txt:write(string)
+	txt:close()
   return string
 end

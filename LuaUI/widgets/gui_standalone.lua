@@ -226,7 +226,6 @@ function Center(num)
 end
 
 function initMain()
-  initialized = true
   -- get rid of engine UI
   Spring.SendCommands("ResBar 0", "ToolTip 0","fps 0","console 0")
   gl.SlaveMiniMap(true)
@@ -236,38 +235,40 @@ function initMain()
   local width = scrW * 0.9
   local height = width / 2
 
-  MenuButts = Panel:New{
+  MenuButts = Panel:New{ -- ha, butts
 		parent = Screen,
     x = 0, y = 0,
 		width  = '100%',
 		height = 40,
+    newX = 0,
     backgroundColor = {0.0,0.02,0.15,1},
 		itemMargin = {0,0,4,0},
 	}
 
 	MenuWindow = Control:New{parent = Screen, x = 0, y = 40, bottom = 0, right  = 0}
 
-  AddMenu{name = 'Skirmish', content = VFS.Include(MENU_DIR .. 'Skirmish.lua')}
-  AddMenu{name = 'Options', content = VFS.Include(MENU_DIR .. 'Options.lua')}
-  AddMenu{name = 'Debug', content = VFS.Include(MENU_DIR .. 'Debug.lua')}
-  AddMenu{name = 'BAR', content = Control:New{}}
+  AddMenu{name = 'Match Maker', width = 110, content = VFS.Include(MENU_DIR .. 'Skirmish.lua')}
+  AddMenu{name = 'Options', right = 0, content = VFS.Include(MENU_DIR .. 'Options.lua')}
+  AddMenu{name = 'Debug', right = 90, content = VFS.Include(MENU_DIR .. 'Debug.lua')}
+  AddMenu{name = 'BAR', width = 50}
+  AddMenu{name = 'Another Game', width = 110}
 
+  initialized = true
   -- load from console buffer
   local buffer = Spring.GetConsoleBuffer(100)
   for i=1,#buffer do
     line = buffer[i]
     widget:AddConsoleLine(line.text,line.priority)
   end
-
 end
 
 function AddMenu(obj)
-  MenuButts:AddChild(Button:New{
+  local button = {
+    name    = obj.name,
     caption = obj.name,
-    content = obj.content,
-    width = 80,
+    content = obj.content or Control:New{},
+    width = obj.width or 80,
     height = 30,
-    x = #MenuButts.children * 90 + 5,
     y = 0,
     backgroundColor = {.4, 0.05, 0, 1},
     OnClick = {
@@ -281,7 +282,18 @@ function AddMenu(obj)
         end
       end
     }
-  })
+  }
+  -- handle alignment/placement
+  if obj.x then
+    button.x = obj.x
+  elseif obj.right then
+    button.right = obj.right
+  else
+    button.x = MenuButts.newX
+    MenuButts.newX = MenuButts.newX + (obj.width or 80) + 1
+  end
+
+  MenuButts:AddChild(Button:New(button))
 end
 
 function widget:GetConfigData()
@@ -300,9 +312,8 @@ function widget:GameSetup()
 end
 
 function widget:AddConsoleLine(text)
-  if not tabs then return end
-  local log = tabs.Debug:GetObjectByName('log')
-
+  if not initialized then return end
+  local log = MenuButts:GetObjectByName('Debug').content:GetObjectByName('log')
   log:AddChild(Chili.TextBox:New{
     width       = '100%',
     text        = text,

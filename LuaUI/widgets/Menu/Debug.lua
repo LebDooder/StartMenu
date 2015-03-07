@@ -1,6 +1,5 @@
 local Debug = Control:New{
 	x = 0, y = 0, right = 0, bottom = 0,
-	name = 'Debug',
 }
 
 ----------------------------

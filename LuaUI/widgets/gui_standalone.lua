@@ -269,17 +269,20 @@ function initMain()
 		width  = '100%',
 		height = 40,
     newX = 0,
+    newR = 0,
     backgroundColor = {0.0,0.02,0.15,1},
 		itemMargin = {0,0,4,0},
 	}
 
 	MenuWindow = Control:New{parent=Screen,x=0,y=40,bottom=0,right=0,padding={0,0,0,0},margin={0,0,0,0}}
 
+  AddMenu{name = 'Games', width = 80, content = VFS.Include(MENU_DIR .. 'Games.lua')}
   AddMenu{name = 'Match Maker', width = 110, content = VFS.Include(MENU_DIR .. 'Skirmish.lua')}
-  AddMenu{name = 'Options', right = 0, content = VFS.Include(MENU_DIR .. 'Options.lua')}
-  AddMenu{name = 'Debug', right = 90, content = VFS.Include(MENU_DIR .. 'Debug.lua')}
-  AddMenu{name = 'BAR', width = 50, content = Image:New{x=0,y=0,bottom=0,right=0,keepAspect=false,file='luaUI/images/Mockup.png'}}
-  AddMenu{name = 'Another Game', width = 110}
+  AddMenu{name = 'Quit', right = 1, OnClick = {function() Spring.SendCommands('QuitForce') end}}
+  AddMenu{name = 'Debug', right = 1, content = VFS.Include(MENU_DIR .. 'Debug.lua')}
+  AddMenu{name = 'Options', right = 1, content = VFS.Include(MENU_DIR .. 'Options.lua')}
+  -- AddMenu{name = 'BAR', width = 50, content = Image:New{x=0,y=0,bottom=0,right=0,keepAspect=false,file='luaUI/images/Mockup.png'}}
+  ShowMenu('Games')
 
   initialized = true
   -- load from console buffer
@@ -299,15 +302,9 @@ function AddMenu(obj)
     height = 30,
     y = 0,
     backgroundColor = {.4, 0.05, 0, 1},
-    OnClick = {
+    OnClick = obj.OnClick or {
       function(self)
-        local Menu = self.content
-        if Menu.parent then
-          if Menu.hidden then Menu:Show(); Menu:BringToFront() else Menu:Hide() end
-        else
-          MenuWindow:AddChild(self.content)
-          Menu:BringToFront()
-        end
+        ShowMenu(self.name)
       end
     }
   }
@@ -315,7 +312,8 @@ function AddMenu(obj)
   if obj.x then
     button.x = obj.x
   elseif obj.right then
-    button.right = obj.right
+    button.right = MenuButts.newR
+    MenuButts.newR = MenuButts.newR + (obj.width or 80) + 1
   else
     button.x = MenuButts.newX
     MenuButts.newX = MenuButts.newX + (obj.width or 80) + 1
@@ -358,6 +356,16 @@ function widget:AddConsoleLine(text)
       outlineWeight    = 1,
     },
   })
+end
+
+function ShowMenu(name)
+  local Menu = MenuButts:GetObjectByName(name).content
+  if Menu.parent then
+    if Menu.hidden then Menu:Show(); Menu:BringToFront() else Menu:Hide() end
+  else
+    MenuWindow:AddChild(Menu)
+    Menu:BringToFront()
+  end
 end
 
 function ScriptTXT(script)

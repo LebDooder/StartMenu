@@ -1,10 +1,10 @@
 function widget:GetInfo()
   return {
-	name      = "Start Menu",
-	desc      = "Landing page for spring",
-	author    = "funk",
-	date      = "Oct, 2014",
-	license   = "GPL-v2",
+	name      = 'Start Menu',
+	desc      = 'Landing page for spring',
+	author    = 'funk',
+	date      = 'Oct, 2014',
+	license   = 'GPL-v2',
 	layer     = 1010,
 	enabled   = true,
   handler   = true
@@ -253,9 +253,9 @@ end
 
 function initMain()
   -- get rid of engine UI
-  Spring.SendCommands("ResBar 0", "ToolTip 0","fps 0","console 0")
+  Spring.SendCommands('ResBar 0', 'ToolTip 0','fps 0','console 0','info 0')
   gl.SlaveMiniMap(true)
-
+  gl.ConfigMiniMap(-1,-1,-1,-1)
   getVars()
   setCursor(Settings['CursorName'] or 'zk')
   Chili.theme.skin.general.skinName = Settings['Skin'] or 'Robocracy'
@@ -263,7 +263,7 @@ function initMain()
   local width = scrW * 0.9
   local height = width / 2
 
-  MenuButts = Panel:New{ -- ha, butts
+  MenuPanel = Panel:New{ -- ha, butts
 		parent = Screen,
     x = 0, y = 0,
 		width  = '100%',
@@ -276,13 +276,20 @@ function initMain()
 
 	MenuWindow = Control:New{parent=Screen,x=0,y=40,bottom=0,right=0,padding={0,0,0,0},margin={0,0,0,0}}
 
-  AddMenu{name = 'Games', width = 80, content = VFS.Include(MENU_DIR .. 'Games.lua')}
-  AddMenu{name = 'Match Maker', width = 110, content = VFS.Include(MENU_DIR .. 'Skirmish.lua')}
-  AddMenu{name = 'Quit', right = 1, OnClick = {function() Spring.SendCommands('QuitForce') end}}
-  AddMenu{name = 'Debug', right = 1, content = VFS.Include(MENU_DIR .. 'Debug.lua')}
-  AddMenu{name = 'Options', right = 1, content = VFS.Include(MENU_DIR .. 'Options.lua')}
-  -- AddMenu{name = 'BAR', width = 50, content = Image:New{x=0,y=0,bottom=0,right=0,keepAspect=false,file='luaUI/images/Mockup.png'}}
-  ShowMenu('Games')
+    AddMenu{name = 'Quit', panelRight = 1, PanelClick = {function() Spring.SendCommands('QuitForce') end}}
+
+    -- TODO: take this out
+    AddMenu{name = 'Rst Markup', panelRight = 1, PanelClick = {
+      function()
+        widgetHandler:ToggleWidget('Chili Markup')
+        widgetHandler:ToggleWidget('Chili Markup') end}}
+
+  for _, menu in pairs(VFS.DirList(MENU_DIR)) do
+    local control = VFS.Include(menu)
+    AddMenu( control )
+    MenuWindow:AddChild(control)
+    control:Hide()
+  end
 
   initialized = true
   -- load from console buffer
@@ -293,33 +300,25 @@ function initMain()
   end
 end
 
-function AddMenu(obj)
+function AddMenu(menu)
   local button = {
-    name    = obj.name,
-    caption = obj.name,
-    content = obj.content or Control:New{},
-    width = obj.width or 80,
+    caption = menu.name,
+    width = menu.panelWidth or 80,
     height = 30,
     y = 0,
     backgroundColor = {.4, 0.05, 0, 1},
-    OnClick = obj.OnClick or {
-      function(self)
-        ShowMenu(self.name)
-      end
-    }
+    OnClick = menu.PanelClick or { function() if menu.hidden then menu:Show(); menu:BringToFront() else menu:Hide() end end }
   }
   -- handle alignment/placement
-  if obj.x then
-    button.x = obj.x
-  elseif obj.right then
-    button.right = MenuButts.newR
-    MenuButts.newR = MenuButts.newR + (obj.width or 80) + 1
+  if menu.panelRight then
+    button.right = MenuPanel.newR
+    MenuPanel.newR = MenuPanel.newR + button.width + 1
   else
-    button.x = MenuButts.newX
-    MenuButts.newX = MenuButts.newX + (obj.width or 80) + 1
+    button.x = MenuPanel.newX
+    MenuPanel.newX = MenuPanel.newX + button.width + 1
   end
 
-  MenuButts:AddChild(Button:New(button))
+  MenuPanel:AddChild(Button:New(button))
 end
 
 function widget:GetConfigData()
@@ -339,13 +338,13 @@ end
 
 function widget:AddConsoleLine(text)
   if not initialized then return end
-  local log = MenuButts:GetObjectByName('Debug').content:GetObjectByName('log')
+  local log = MenuWindow:GetObjectByName('Debug'):GetObjectByName('log')
   log:AddChild(Chili.TextBox:New{
     width       = '100%',
     text        = text,
     duplicates  = 0,
-    align       = "left",
-    valign      = "ascender",
+    align       = 'left',
+    valign      = 'ascender',
     padding     = {0,0,0,0},
     duplicates  = 0,
     lineSpacing = 1,
@@ -356,16 +355,6 @@ function widget:AddConsoleLine(text)
       outlineWeight    = 1,
     },
   })
-end
-
-function ShowMenu(name)
-  local Menu = MenuButts:GetObjectByName(name).content
-  if Menu.parent then
-    if Menu.hidden then Menu:Show(); Menu:BringToFront() else Menu:Hide() end
-  else
-    MenuWindow:AddChild(Menu)
-    Menu:BringToFront()
-  end
 end
 
 function ScriptTXT(script)

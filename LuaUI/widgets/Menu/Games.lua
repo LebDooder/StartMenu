@@ -1,7 +1,8 @@
 local Match = Window:New{
-	name = 'Games',
-	x      = Center(400).x,
-	y      = Center(400).y,
+	name = 'Launch Game',
+	panelWidth = 120,
+	x = Center(400).x,
+	y = Center(400).y,
 	height = 400,
 	width  = 400,
 	padding = {5,5,5,5},
@@ -57,36 +58,28 @@ local GameList = Stack{
 
 -- fill list of games
 local function AddGame(info)
-	-- info.sides = include(dir .. "gamedata/sidedata.lua")
-	if info.modtype == 0 then return end
-	info.version = info.version or ''
+
 	GameList:AddChild(Button:New{
-		caption  = info.name,
-		tooltip  = info.version,
+		caption  = info.game or info.name,
+		tooltip  = info.name .. info.description,
 		width    = '100%',
 		y        = #GameList.children * 45,
 		height   = 40,
 		fontSize = 20,
 		OnClick = {
 			function(self)
-				Match.Script.gametype = info.name .. ' ' ..  info.version
+				Match.Script.gametype = info.name
 				StartScript()
 			end
 		}
 	})
 end
 
-for _, dir in pairs(VFS.SubDirs("games/")) do
-	if dir:match('.sdd') and VFS.FileExists(dir .. "modinfo.lua") then
-		AddGame(include(dir .. "modinfo.lua"))
-	end
+for _, archive in pairs(VFS.GetAllArchives()) do
+	local info = VFS.GetArchiveInfo(archive)
+	if info.modtype == 1 then AddGame(info) end
 end
 
-for _, filename in pairs(VFS.DirList("games/")) do
-	if filename:match('.sd7') or filename:match('.sdz') then
-		AddGame(VFS.UseArchive(filename, function() return include("modinfo.lua") end))
-	end
-end
 ----------------------
 
 Match:AddChild(GameList)

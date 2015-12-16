@@ -4,6 +4,7 @@ local Options = Window:New{
 	x = Center(400).x,
 	y = Center(525).y,
 	name = 'Options',
+	panelRight = true,
 }
 
 Options:AddChild(Stack{

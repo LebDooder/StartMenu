@@ -1,4 +1,6 @@
 local Debug = Control:New{
+	name = "Debug",
+	panelRight = true,
 	x = 0, y = 0, right = 0, bottom = 0,
 }
 

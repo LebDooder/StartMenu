@@ -2,11 +2,12 @@ local width = scrW * 0.9
 local height = width / 2
 
 local Match = Window:New{
-	name = 'Match',
-	x      = Center(width).x,
-	y      = Center(height).y,
+	name = 'Set Up a Skirmish',
+	panelWidth = 140,
+	x = Center(width).x,
+	y = Center(height).y,
 	height = height,
-	width  = width,
+	width = width,
 	padding = {5,5,5,5},
 	bots = {},
 	botNames = {'Fred','Fred Jr.','Steve','John','Greg'},
@@ -242,8 +243,7 @@ local MapList = ScrollPanel:New{
 }
 
 -- fill list of maps
-for _, name in pairs(VFS.GetMaps()) do
-	local info = VFS.GetArchiveInfo(name)
+local function AddMap(info)
 	MapList:AddChild(Button:New{
 		caption  = info.name,
 		x        = 0,
@@ -263,35 +263,28 @@ end
 -- fill list of games
 local function AddGame(info)
 	-- info.sides = include(dir .. "gamedata/sidedata.lua")
-	if info.modtype == 0 then return end
 	info.version = info.version or ''
 	GameList:AddChild(Button:New{
-		caption  = info.name,
-		tooltip  = info.version,
+		caption  = info.game or info.name,
+		tooltip  = info.name .. ' - ' .. info.description,
 		x        = 0,
 		y        = #GameList.children * 30,
 		width    = '100%',
 		height   = 26,
 		OnClick = {
 			function(self)
-				Settings['game'] = info.name .. ' ' ..  info.version
-				Match.Script.gametype = info.name .. ' ' ..  info.version
-				Match:GetChildByName('Game Name'):SetCaption(info.name)
+				Settings['game'] = info.name
+				Match.Script.gametype = info.name
+				Match:GetChildByName('Game Name'):SetCaption(info.game or info.name)
 			end
 		}
 	})
 end
 
-for _, dir in pairs(VFS.SubDirs("games/")) do
-	if dir:match('.sdd') and VFS.FileExists(dir .. "modinfo.lua") then
-		AddGame(include(dir .. "modinfo.lua"))
-	end
-end
-
-for _, filename in pairs(VFS.DirList("games/")) do
-	if filename:match('.sd7') or filename:match('.sdz') then
-		AddGame(VFS.UseArchive(filename, function() return include("modinfo.lua") end))
-	end
+for _, archive in pairs(VFS.GetAllArchives()) do
+	local info = VFS.GetArchiveInfo(archive)
+	if info.modtype == 1 then AddGame(info)
+	elseif info.modtype == 3 then AddMap(info) end
 end
 ----------------------
 
